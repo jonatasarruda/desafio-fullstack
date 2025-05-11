@@ -1,0 +1,8 @@
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.csproj.AssemblyReference.cache
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.AssemblyInfoInputs.cache
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.AssemblyInfo.cs
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.csproj.CoreCompileInputs.cache
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.sourcelink.json
