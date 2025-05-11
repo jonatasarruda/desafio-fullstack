@@ -82,6 +82,11 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
             return _mapper.Map<UsuarioResponseContract>(usuario);
         }
 
+        public Task<UsuarioResponseContract> Obter(long id, long idUsuario)
+        {
+            throw new NotImplementedException();
+        }
+
         private string GeradorHashSenha(string senha)
         {
             string hashSenha;
@@ -96,6 +101,11 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
 
             return hashSenha;
             
+        }
+
+        Task<IEnumerable<UsuarioResponseContract>> IService<UsuarioRequestContract, UsuarioResponseContract, long>.Obter(long idUsuario)
+        {
+            throw new NotImplementedException();
         }
     }
 }
