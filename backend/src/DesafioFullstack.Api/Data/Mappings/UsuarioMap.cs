@@ -10,33 +10,30 @@ namespace DesafioFullstack.Api.Data.Mappings
 {
     public class UsuarioMap : IEntityTypeConfiguration<Usuario>
     {
-{
+        
         public void Configure(EntityTypeBuilder<Usuario> builder)
         {
             builder.ToTable("Usuario")
-                .HasKey(x => x.Id)
+                .HasKey(x => x.Id);
 
             builder.Property(x => x.Nome)
                 .IsRequired()
-                .HasColumnType("VARCHAR")
+                .HasColumnType("VARCHAR");
 
             builder.Property(x => x.Email)
                 .IsRequired()
-                .HasColumnType("VARCHAR")
+                .HasColumnType("VARCHAR");
 
             builder.Property(x => x.Senha)
                 .IsRequired()
-                .HasColumnType("VARCHAR")
+                .HasColumnType("VARCHAR");
 
             builder.Property(x => x.DataCadastro)
                 .IsRequired()
-                .HasColumnType("TIMESTAMP")
+                .HasColumnType("TIMESTAMP");
 
             builder.Property(x => x.DataInativacao)
-                .IsRequired()
-                .HasColumnType("TIMESTAMP")
-    
+                .HasColumnType("TIMESTAMP");
         }
-    }
 }
 }

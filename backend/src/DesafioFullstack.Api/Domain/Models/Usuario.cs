@@ -10,7 +10,8 @@ namespace DesafioFullstack.Api.Domain.Models
     {
         [Key]
         public long Id { get; set; }
-        public string Nome { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        
         [Required(ErrorMessage = "Campo de email é obrigatório")]
         public string Email { get; set; } = string.Empty;
         [Required(ErrorMessage = "Campo de senha é obrigatório")]
