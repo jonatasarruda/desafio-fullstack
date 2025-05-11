@@ -8,6 +8,7 @@ using DesafioFullstack.Api.Data;
 using DesafioFullstack.Api.Domain.Models;
 using DesafioFullstack.Api.Domain.Repositories.Interfaces;
 using DesafioFullstack.Api.Domain.Repositories.Classes;
+using DesafioFullstack.Api.AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +31,7 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
         options.UseNpgsql(connectionString), ServiceLifetime.Transient, ServiceLifetime.Transient);
 
     var config = new MapperConfiguration(cfg => {
-
+        cfg.AddProfile<UsuarioProfile>();
     });
 
     IMapper mapper = config.CreateMapper();
