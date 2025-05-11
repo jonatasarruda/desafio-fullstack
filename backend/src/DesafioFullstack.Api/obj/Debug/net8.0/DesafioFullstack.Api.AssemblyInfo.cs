@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DesafioFullstack.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ed8d9087b7ef317e9e43d11ce8371fb03f378779")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fee163968808e9484e5094ff97328c89b7837c0c")]
 [assembly: System.Reflection.AssemblyProductAttribute("DesafioFullstack.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DesafioFullstack.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

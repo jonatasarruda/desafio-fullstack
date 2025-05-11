@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using DesafioFullstack.Api.Data;
 using DesafioFullstack.Api.Domain.Models;
+using DesafioFullstack.Api.Domain.Repositories.Interfaces;
+using DesafioFullstack.Api.Domain.Repositories.Classes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +38,8 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     builder.Services
     .AddSingleton(builder.Configuration)
     .AddSingleton(builder.Environment)
-    .AddSingleton(mapper); 
+    .AddSingleton(mapper)
+    .AddScoped<IUsuarioRepository, UsuarioRepository>();
 }
 
 // Configura o serviços da API.
