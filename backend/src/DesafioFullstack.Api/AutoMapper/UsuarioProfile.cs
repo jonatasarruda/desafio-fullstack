@@ -14,6 +14,8 @@ namespace DesafioFullstack.Api.AutoMapper
         {
             CreateMap<Usuario, UsuarioLoginRequestContract>().ReverseMap();
             CreateMap<Usuario, UsuarioLoginResponseContract>().ReverseMap();
+            CreateMap<Usuario, UsuarioResponseContract>().ReverseMap();
+            CreateMap<Usuario, UsuarioRequestContract>().ReverseMap();
         }
     }
 }

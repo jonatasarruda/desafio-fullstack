@@ -1,13 +1,15 @@
 using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using DesafioFullstack.Api.Data;
 using DesafioFullstack.Api.Domain.Models;
-using DesafioFullstack.Api.Domain.Repositories.Interfaces;
 using DesafioFullstack.Api.Domain.Repositories.Classes;
+using DesafioFullstack.Api.Domain.Repositories.Interfaces;
+using DesafioFullstack.Api.Domain.Services.Interfaces;
+using DesafioFullstack.Api.Domain.Services.Classes;
+using Microsoft.EntityFrameworkCore;
 using DesafioFullstack.Api.AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +42,9 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     .AddSingleton(builder.Configuration)
     .AddSingleton(builder.Environment)
     .AddSingleton(mapper)
-    .AddScoped<IUsuarioRepository, UsuarioRepository>();
+    .AddScoped<TokenService>()
+    .AddScoped<IUsuarioRepository, UsuarioRepository>()
+    .AddScoped<IUsuarioService, UsuarioService>();
 }
 
 // Configura o serviços da API.
