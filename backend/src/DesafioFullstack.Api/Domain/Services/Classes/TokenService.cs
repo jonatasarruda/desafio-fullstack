@@ -35,7 +35,7 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
 
                 Expires = DateTime.UtcNow.AddMinutes(Convert.ToInt32(_configuration["ValidadeTokenMinutos"])),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                                                            SecurityAlgorithms.Sha256),
+                                                            SecurityAlgorithms.HmacSha256Signature),
 
             };
             
