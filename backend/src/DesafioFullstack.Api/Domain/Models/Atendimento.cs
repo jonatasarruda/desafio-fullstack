@@ -23,7 +23,7 @@ namespace DesafioFullstack.Api.Domain.Models
         public long ClienteId { get; set; }
         [ForeignKey("ClienteId")]
         public Cliente Cliente { get; set; }
-        public List<Parecer> Pareceres { get; set; }
+        public virtual ICollection<Parecer> Pareceres { get; set; }
         
     }
 }

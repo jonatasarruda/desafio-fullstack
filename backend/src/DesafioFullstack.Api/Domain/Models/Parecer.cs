@@ -15,10 +15,11 @@ namespace DesafioFullstack.Api.Domain.Models
         [Required(ErrorMessage = "Informe a descrição do parecer")]
         public string DescricaoParecer { get; set;} = string.Empty;
         public DateTime DataCadastro { get; set; }
-        public DateTime? DataInativacao { get; set; }
 
         [Required(ErrorMessage = "Informe o usuário do parecer")]
         public Usuario Usuario { get; set; }
+
+        public long UsuarioId { get; set; }
 
         [Required(ErrorMessage = "Informe o atendimento do parecer")]
         public long AtendimentoId { get; set; }

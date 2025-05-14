@@ -8,24 +8,32 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DesafioFullstack.Api.Data.Mappings
 {
-    public class ClienteMap
+    public class ParecerMap
     {
-        public void Configure(EntityTypeBuilder<Cliente> builder)
+    public void Configure(EntityTypeBuilder<Parecer> builder)
         {
-            builder.ToTable("Cliente")
+            builder.ToTable("Pareceres")
                 .HasKey(x => x.Id);
 
-            builder.Property(x => x.Nome)
+            builder.Property(x => x.DescricaoParecer)
                 .IsRequired()
                 .HasColumnType("VARCHAR");
-
+            
             builder.Property(x => x.DataCadastro)
                 .IsRequired()
                 .HasColumnType("TIMESTAMP");
 
-            builder.Property(x => x.DataInativacao)
-                .HasColumnType("TIMESTAMP");
-            
+            builder.HasOne(x => x.Atendimento)
+                .WithMany(x => x.Pareceres)
+                .HasForeignKey(x => x.AtendimentoId);
+
+            builder.HasOne(p => p.Usuario)     
+                .WithMany(u => u.Pareceres) 
+                .HasForeignKey(p => p.UsuarioId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
         }
     }
 }
