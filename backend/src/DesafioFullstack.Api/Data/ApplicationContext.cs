@@ -12,6 +12,9 @@ namespace DesafioFullstack.Api.Data
     public class ApplicationContext : DbContext
     {
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<Atendimento> Atendimentos { get; set; }
+        public DbSet<Parecer> Pareceres { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options){
 
@@ -20,6 +23,10 @@ namespace DesafioFullstack.Api.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UsuarioMap());
+            modelBuilder.ApplyConfiguration(new ClienteMap());
+            modelBuilder.ApplyConfiguration(new ParecerMap());
+            modelBuilder.ApplyConfiguration(new AtendimentoMap());
+
         }
 
     }

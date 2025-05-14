@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DesafioFullstack.Api.Data.Mappings
 {
-    public class ParecerMap
+    public class ParecerMap : IEntityTypeConfiguration<Parecer>
     {
     public void Configure(EntityTypeBuilder<Parecer> builder)
         {

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DesafioFullstack.Api.Data.Mappings
 {
-    public class AtendimentoMap
+    public class AtendimentoMap : IEntityTypeConfiguration<Atendimento>
     {
              public void Configure(EntityTypeBuilder<Atendimento> builder)
         {
