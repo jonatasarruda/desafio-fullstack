@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DesafioFullstack.Api.Controllers
 {   
     [ApiController]
-    [Route("atendimento")]
+    [Route("atendimentos")]
     public class AtendimentoController : BaseController
     {
         private readonly IService<AtendimentoRequestContract, AtendimentoResponseContract, long> _atendimentoService;
