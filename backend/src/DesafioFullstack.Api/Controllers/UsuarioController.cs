@@ -39,9 +39,10 @@ namespace DesafioFullstack.Api.Controllers
                 return Problem(ex.Message);
             }
         }
-        
+
         [HttpPost]
         [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> Adicionar(UsuarioRequestContract contrato)
         {
             try

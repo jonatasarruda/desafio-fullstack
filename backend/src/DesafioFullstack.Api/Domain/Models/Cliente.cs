@@ -14,8 +14,6 @@ namespace DesafioFullstack.Api.Domain.Models
         public string Nome { get; set; } = string.Empty;
         public DateTime DataCadastro { get; set; }
         public DateTime? DataInativacao { get; set; }
-
-        public Atendimento Atendimento { get; set; }
         public virtual ICollection<Atendimento> Atendimentos { get; set;}
     
     }

@@ -11,6 +11,8 @@ using DesafioFullstack.Api.Domain.Services.Interfaces;
 using DesafioFullstack.Api.Domain.Services.Classes;
 using Microsoft.EntityFrameworkCore;
 using DesafioFullstack.Api.AutoMapper;
+using DesafioFullstack.Api.Contract.Atendimentos;
+using DesafioFullstack.Api.Contract.Pareceres;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,11 +30,12 @@ app.Run();
 static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
 {
     string? connectionString = builder.Configuration.GetConnectionString("PADRAO");
-    
+
     builder.Services.AddDbContext<ApplicationContext>(options =>
         options.UseNpgsql(connectionString), ServiceLifetime.Transient, ServiceLifetime.Transient);
 
-    var config = new MapperConfiguration(cfg => {
+    var config = new MapperConfiguration(cfg =>
+    {
         cfg.AddProfile<UsuarioProfile>();
         cfg.AddProfile<ClienteProfile>();
         cfg.AddProfile<AtendimentoProfile>();
@@ -47,7 +50,16 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     .AddSingleton(mapper)
     .AddScoped<TokenService>()
     .AddScoped<IUsuarioRepository, UsuarioRepository>()
-    .AddScoped<IUsuarioService, UsuarioService>();
+    .AddScoped<IUsuarioService, UsuarioService>()
+    .AddScoped<IClienteRepository, ClienteRepository>()
+    .AddScoped<IClienteService, ClienteService>()
+    .AddScoped<IAtendimentoRepository, AtendimentoRepository>()
+    .AddScoped<IService<AtendimentoRequestContract, AtendimentoResponseContract, long>, AtendimentoService>()
+    .AddScoped<IParecerRepository, ParecerRepository>()
+    .AddScoped<IService<ParecerRequestContract, ParecerResponseContract, long>, ParecerService>()
+    
+    ;
+
 }
 
 // Configura o serviços da API.
