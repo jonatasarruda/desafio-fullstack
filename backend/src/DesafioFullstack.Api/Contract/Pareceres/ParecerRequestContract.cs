@@ -9,5 +9,6 @@ namespace DesafioFullstack.Api.Contract.Pareceres
     {
         public string DescricaoParecer { get; set; }
         public string AtendimentoId { get; set; }
+        public string UsuarioId { get; set; }
     }
 }

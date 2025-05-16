@@ -37,6 +37,7 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
             _ = await Obter(id) ?? throw new NotImplementedException();
 
             var atendimento = _mapper.Map<Atendimento>(entidade);
+            atendimento.Id = id;
 
             atendimento = await _atendimentoRepository.Atualizar(atendimento);
 

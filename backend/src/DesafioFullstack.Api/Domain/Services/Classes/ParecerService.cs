@@ -36,7 +36,7 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
             _ = await Obter(id) ?? throw new NotImplementedException();
 
             var parecer = _mapper.Map<Parecer>(entidade);
-
+            parecer.Id = id;
             parecer = await _parecerRepository.Atualizar(parecer);
 
             return _mapper.Map<ParecerResponseContract>(parecer);

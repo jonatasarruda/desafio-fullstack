@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DesafioFullstack.Api.Controllers
 {
-     [ApiController]
+    [ApiController]
     [Route("pareceres")]
     public class ParecerController : BaseController
     {

@@ -57,19 +57,23 @@ namespace DesafioFullstack.Api.Domain.Repositories.Classes
         public async Task<IEnumerable<Atendimento>> Obter()
         {
             return await _contexto.Atendimentos.OrderBy(u => u.Id)
+                                                .Include(u => u.Pareceres)
                                                 .ToListAsync();
+                                                
         }
 
         public async Task<IEnumerable<Atendimento>> ObterPorCliente(long clienteId)
         {
             return await _contexto.Atendimentos.Where(x => x.ClienteId == clienteId)
                                                 .OrderBy(x => x.ClienteId == clienteId)
+                                                .Include(u => u.Pareceres)
                                                 .ToListAsync();
         }
 
         public async Task<Atendimento?> Obter(long id)
         {
              return await _contexto.Atendimentos.Where(x => x.Id == id)
+                                                    .Include(u => u.Pareceres)
                                                     .FirstOrDefaultAsync();
         }
 
@@ -77,6 +81,7 @@ namespace DesafioFullstack.Api.Domain.Repositories.Classes
         {
              return await _contexto.Atendimentos.Where(x => x.DataCadastro >= dataInicial && x.DataCadastro <= dataFinal)
                                                 .OrderBy(x => x.DataCadastro == dataInicial)
+                                                .Include(u => u.Pareceres)
                                                 .ToListAsync();
         }
     }

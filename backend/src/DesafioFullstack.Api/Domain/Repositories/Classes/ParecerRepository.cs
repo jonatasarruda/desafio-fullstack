@@ -47,12 +47,15 @@ namespace DesafioFullstack.Api.Domain.Repositories.Classes
 
         public async Task<IEnumerable<Parecer>> Obter()
         {
-            throw new NotImplementedException();
+            return await _contexto.Pareceres.OrderBy(u => u.Id)
+                                                .ToListAsync();
         }
 
         public async Task<Parecer?> Obter(long id)
         {
-            throw new NotImplementedException();
+            return await _contexto.Pareceres.Where(x => x.Id == id)
+                                                .OrderBy(u => u.Id)
+                                                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Parecer>> ObterTodosPorAtendimento(long atendimentoId)
@@ -61,5 +64,6 @@ namespace DesafioFullstack.Api.Domain.Repositories.Classes
                                             .OrderBy(x => x.AtendimentoId == atendimentoId)
                                             .ToListAsync();
         }
+
     }
 }
