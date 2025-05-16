@@ -50,7 +50,7 @@ namespace DesafioFullstack.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
+        [Route("{id:long}")]
         [Authorize]
         public async Task<IActionResult> Obter(long id)
         {
@@ -68,7 +68,7 @@ namespace DesafioFullstack.Api.Controllers
         [HttpGet]
         [Route("{nome}")]
         [Authorize]
-        public async Task<IActionResult> Obter(string nome)
+        public async Task<IActionResult> ObterPorNome(string nome)
         {
             try
             {

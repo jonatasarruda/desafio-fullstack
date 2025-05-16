@@ -33,10 +33,11 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
 
         public async Task<ParecerResponseContract> Atualizar(long id, ParecerRequestContract entidade, long idUsuario)
         {
-            _ = await Obter(id) ?? throw new NotImplementedException();
+            var parecerExistente = await _parecerRepository.Obter(id) ?? throw new NotImplementedException();
 
             var parecer = _mapper.Map<Parecer>(entidade);
             parecer.Id = id;
+            parecer.DataCadastro = parecerExistente.DataCadastro;
             parecer = await _parecerRepository.Atualizar(parecer);
 
             return _mapper.Map<ParecerResponseContract>(parecer);

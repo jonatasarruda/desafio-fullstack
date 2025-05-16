@@ -62,6 +62,7 @@ namespace DesafioFullstack.Api.Domain.Repositories.Classes
         public async Task<IEnumerable<Cliente>> Obter()
         {
             return await _contexto.Clientes.OrderBy(c => c.Id)
+                                        .Include(x => x.Atendimentos)
                                         .ToListAsync();
         }
 
