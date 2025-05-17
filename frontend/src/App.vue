@@ -18,7 +18,7 @@ export default {
   },
 
   data: () => ({
-    usuarioLogado: true,
+    usuarioLogado: false,
   }),
 
 };

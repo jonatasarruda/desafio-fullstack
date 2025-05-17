@@ -10,35 +10,45 @@ const routes = [
         name: 'LoginSistema',
         component: Login,
         title: 'Login',
-        meta: { requiredAuth: false }
+        meta: { requiredAuth: false,
+                showInMenu: false
+              }
     },
     {
         path: '/',
-        name: 'Dashboard',
+        name: 'DashboardGeral',
         component: DashboardGeral,
         title: 'Dashboard',
-        meta: { requiredAuth: true }
+        meta: { requiredAuth: true,
+                showInMenu: true
+              }
     },
     {
         path: '/clientes',
-        name: 'Clientes',
+        name: 'ControleClientes',
         component: ControleClientes,
         title: 'Clientes',
-        meta: { requiredAuth: true }
+        meta: { requiredAuth: true,
+                showInMenu: true
+              }
     },
     {
         path: '/atendimentos',
-        name: 'Atendimentos',
+        name: 'ControleAtendimentos',
         component: ControleAtendimentos,
         title: 'Atendimentos',
-        meta: { requiredAuth: true }
+        meta: { requiredAuth: true,
+                showInMenu: true
+              }
     },
     {
         path: '/usuarios',
-        name: 'Usuarios',
+        name: 'ControleUsuarios',
         component: ControleUsuarios,
         title: 'Usuarios',
-        meta: { requiredAuth: true }
+        meta: { requiredAuth: true,
+                showInMenu: true
+              }
     }
 ]
 

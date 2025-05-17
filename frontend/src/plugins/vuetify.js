@@ -70,7 +70,7 @@ const vuetify = new Vuetify({
             'inverse-on-surface': '#2c292e',
             outline: '#b8afbb',
             'outline-variant': '#968d99',
-            primaria: '#edd3ff',
+            primary: '#edd3ff',
             'on-primary': '#351552',
             'primary-container': '#472764',
             'on-primary-container': '#f1dbff',

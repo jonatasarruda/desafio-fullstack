@@ -41,13 +41,6 @@ export default {
   data: () => ({
     email: '',
     password: '',
-    emailRules: [
-      v => !!v || 'E-mail é obrigatório',
-      v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido',
-    ],
-    passwordRules: [
-      v => !!v || 'Senha é obrigatória',
-    ],
   }),
   methods: {
     handleLogin() {

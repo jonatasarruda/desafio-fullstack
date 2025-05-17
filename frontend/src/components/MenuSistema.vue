@@ -1,5 +1,5 @@
 <template>
-<div class="fill-height" fluid>
+<div fluid>
   <v-card>
     <v-app-bar
       absolute
@@ -50,9 +50,10 @@
 
       <v-list dense>
         <v-list-item
-          v-for="item in items"
+          v-for="item in itemsMenu"
           :key="item.title"
           link
+          :to="item.path"
           dark
         >
           <v-list-item-icon>
@@ -73,26 +74,30 @@
 <script>
 
   export default {
+    name: 'MenuSistema',
     data () {
       return {
         drawer: true,
-        items: [
-          { title: 'Home', icon: 'mdi-home-city' },
-          { title: 'My Account', icon: 'mdi-account' },
-          { title: 'Users', icon: 'mdi-account-group-outline' },
-        ],
+        itemsMenu: [],
         mini: true,
-        termoBusca: '',
       }
     },
-    computed: {
-            itensFiltrados() {
-                if (!this.termoBusca) {
-                return this.items;
-            }
-            const busca = this.termoBusca.toLowerCase();
-            return this.items.filter(item => item.title.toLowerCase().includes(busca));
-            }
-        }
+    created() {
+      this.carregarItensMenu();
+    },
+    methods: {
+      carregarItensMenu() {
+        const rotasDoMenu = this.$router.options.routes
+          .filter(rota => rota.meta && rota.meta.showInMenu) // Filtra rotas que devem aparecer no menu
+          .map(rota => {
+            return {
+              title: rota.meta.title || rota.name, // Usa o título do meta ou o nome da rota
+              icon: rota.meta.icon || 'mdi-help-circle-outline', // Ícone do meta ou um padrão
+              path: rota.path, // Caminho da rota para a navegação
+            };
+          });
+        this.itemsMenu = rotasDoMenu;
+      }
     }
+  }
 </script>
