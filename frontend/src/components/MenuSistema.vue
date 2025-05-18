@@ -34,10 +34,10 @@
       color="primary"
       app
     >
-      <v-list-item class="px-2" dark>
+      <v-list-item class="px-2 my-4" dark>
 
         
-        <v-list-item-title v-show="!mini">John Leider</v-list-item-title>
+        <v-list-item-title class="my-4" v-show="!mini">John Leider</v-list-item-title>
 
         <v-btn
           icon
@@ -48,7 +48,7 @@
       </v-list-item>
 
 
-      <v-list dense>
+      <v-list >
         <v-list-item
           v-for="item in itemsMenu"
           :key="item.title"

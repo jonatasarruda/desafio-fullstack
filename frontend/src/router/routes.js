@@ -16,7 +16,7 @@ const routes = [
     },
     {
         path: '/',
-        name: 'DashboardGeral',
+        name: 'Dashboard',
         component: DashboardGeral,
         title: 'Dashboard',
         meta: { requiredAuth: true,
@@ -25,7 +25,7 @@ const routes = [
     },
     {
         path: '/clientes',
-        name: 'ControleClientes',
+        name: 'Clientes',
         component: ControleClientes,
         title: 'Clientes',
         meta: { requiredAuth: true,
@@ -34,7 +34,7 @@ const routes = [
     },
     {
         path: '/atendimentos',
-        name: 'ControleAtendimentos',
+        name: 'Atendimentos',
         component: ControleAtendimentos,
         title: 'Atendimentos',
         meta: { requiredAuth: true,
@@ -43,7 +43,7 @@ const routes = [
     },
     {
         path: '/usuarios',
-        name: 'ControleUsuarios',
+        name: 'Usuarios',
         component: ControleUsuarios,
         title: 'Usuarios',
         meta: { requiredAuth: true,
