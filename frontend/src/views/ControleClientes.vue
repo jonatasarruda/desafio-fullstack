@@ -1,13 +1,10 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <v-container fluid>
-    <v-card>
-      <v-card-title>
-        Cadastro deUsuários
-        <v-spacer></v-spacer>
-      </v-card-title>
+    <h1 class="my-5 px-5">Cadastro de clientes</h1>
+    <v-card class="my-5 mx-5">
       <TableGenerica
-        :headers="userHeaders"
+        :headers="clientHeaders"
         :items="clientItems"
         :loading="isLoading"
         :search="searchTerm"
@@ -21,23 +18,27 @@
           <v-text-field
             v-model="searchTerm"
             label="Buscar Clientes..."
-            class = "mx-2 px-2"
+            class = "mx-8"
             prepend-inner-icon="mdi-magnify"
             clearable
           ></v-text-field>
-           <v-btn
-            elevation="2"
-            raised
-            @click="cadastroCliente()"
-            color = primary
-            class = "mx-2 px-2"
-            >Cadastrar Novo Cliente</v-btn> 
+          <div class= "py-2">
+            <!-- Botão para telas maiores (md e acima) -->
+            <v-btn
+              v-if="!$vuetify.breakpoint.smAndDown"
+              elevation="2"
+              raised
+              @click="cadastroCliente()"
+              color = primary
+              class = "mx-5 py-5"
+            >Cadastrar Novo Cliente</v-btn>
+          </div> 
         </div>
         </template>
         
-        <template v-slot:item.status="{ item }">
-          <v-chip :color="getStatusColor(item.status)" small dark>
-            {{ item.status === 'active' ? 'Ativo' : 'Inativo' }}
+        <template v-slot:item.ativo="{ item }">
+          <v-chip :color="getStatusColor(item.ativo)" small dark>
+            {{ item.ativo ? 'Ativo' : 'Inativo' }}
           </v-chip>
         </template>
 
@@ -68,12 +69,37 @@
 
       </TableGenerica>
     </v-card>
+
+    <!-- Botão FAB para telas menores (sm e abaixo) -->
+    <v-tooltip left>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          v-if="$vuetify.breakpoint.smAndDown"
+          fab
+          dark
+          small
+          fixed
+          bottom
+          right
+          color="primary"
+          class="ma-4" 
+          elevation="4"
+          @click="cadastroCliente()" 
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </template>
+      <span>Cadastrar Novo Cliente</span>
+    </v-tooltip>
+
     <ModalGenerico
       v-model="exibirModal.show"
       :item-to-edit="exibirModal.currentItem"
-      :form-fields="userFormFields"
+      :form-fields="clientFormFields"
       :modal-title="exibirModal.title"
-      @save="handleSaveUser"
+      @save="handleSaveClient"
     />
   </v-container>
 </template>
@@ -82,6 +108,7 @@
 import ModalGenerico from '@/components/ModalGenerico.vue';
 import TableGenerica from '@/components/TableGenerica.vue';
 import apiService from '@/services/apiService.js';
+import { format, parseISO, isValid } from 'date-fns';
 
 export default {
   name: 'ClienteView',
@@ -99,37 +126,36 @@ export default {
         currentItem: null,
         novoCadastro: false,
       },
-      userHeaders: [
+      clientHeaders: [
         { text: 'ID', value: 'id', sortable: true, width: '10%' },
         { text: 'Nome', value: 'nome', sortable: true},
-        // { text: 'Status', value: 'status', sortable: false, align: 'center' },
+        { text: 'Status', value: 'ativo', sortable: false, align: 'center' }, // Alterado value para 'ativo'
         { text: 'Data de cadastro', value: 'dataCadastro', sortable: true, align: 'center' },
         { text: 'Ações', value: 'actions', sortable: false, align: 'right', width: '150px' } 
       ],
       clientItems: [],
-      userFormFields: [
+      clientFormFields: [
     
         { model: 'nome', label: 'Nome', type: 'text', required: true, rules: [
             v => !!v || 'Nome é obrigatório',
           ], cols: 12 },
         
-        // { model: 'status', label: 'Status*', type: 'select', required: true,
-        //   items: [ { text: 'Ativo', value: 'active' },{ text: 'Inativo', value: 'inactive' }],
-        //   itemText: 'text', // Chave para o texto de exibição no select
-        //   itemValue: 'value', // Chave para o valor no select
-        //   cols: 12,
-        // },
+        { model: 'ativo', label: 'Status*', type: 'select', required: true, // Alterado model para 'ativo'
+          items: [ { text: 'Ativo', value: true },{ text: 'Inativo', value: false }], // Alterado para booleanos
+          itemText: 'text', // Chave para o texto de exibição no select
+          itemValue: 'value', // Chave para o valor no select
+          cols: 12,
+        },
       ],
     };
   },
   methods: {
     getStatusColor(status) {
-      return status === 'active' ? 'green' : 'red';
+      return status ? 'green' : 'red'; // Compara com booleano
     },
     editarCliente(cliente) {
-      this.exibirModal.currentItem = cliente; 
-      cliente.senha = '';
-      this.exibirModal.title = `Editar Cliente: ${cliente.nome}`;
+      this.exibirModal.currentItem = { ...cliente, ativo: !!cliente.ativo }; 
+      this.exibirModal.title = `Editar Cliente:`;
       this.exibirModal.novoCadastro = false;
       this.exibirModal.show = true;
     },
@@ -143,22 +169,31 @@ export default {
       console.log('Excluir usuário:', user);
       // Lógica para confirmar e excluir o usuário
     },
-    async handleSaveUser(savedItem) {
+    async handleSaveClient(savedItem) {
         if (this.exibirModal.novoCadastro) {
-            apiService.cadastrarNovo('/clientes', savedItem)
+            const payload = { ...savedItem, ativo: !!savedItem.ativo };
+            apiService.cadastrarNovo('/clientes', payload)
             .then(response => {
-                this.clientItems.push({...response})
-                console.log('Usuário cadastrado:', response);
+                this.clientItems.push({...response, ativo: !!response.ativo});
+                console.log('Cliente cadastrado:', response);
         })
         } else {
         const index = this.clientItems.findIndex(u => u.id === savedItem.id);
         if (index !== -1) {
-            
-            await apiService.atualizar('/clientes', savedItem.id, savedItem)
-                      .then(response =>{
-                        Object.assign(this.clientItems[index], response)
+            const originalItem = this.clientItems[index];
+            const payload = { ...savedItem, ativo: !!savedItem.ativo };
+            await apiService.atualizar('/clientes', savedItem.id, payload)
+                      .then(responseFromServer =>{
+                        Object.assign(this.clientItems[index], {
+                          ...responseFromServer,
+                          ativo: !!responseFromServer.ativo,
+                          dataCadastro: originalItem.dataCadastro 
+                        });
                       })
-            console.log('Usuário atualizado:', this.clientItems[index]);
+            console.log('Cliente atualizado:', this.clientItems[index]);
+        } else {
+          console.error("Cliente não encontrado na lista para atualização:", savedItem.id);
+          // Adicionar notificação de erro para o usuário
         }
     }
       this.exibirModal.show = false;
@@ -167,11 +202,18 @@ export default {
   async created() {
     let resultadoClientes = await apiService.obterTodos('/clientes');
 
-    resultadoClientes.forEach( cliente =>
-        {
-            this.clientItems.push({...cliente})
+    this.clientItems = resultadoClientes.map(cliente => {
+      let dataFormatada = 'Data inválida';
+      const ativoBooleano = typeof cliente.ativo === 'string' ? cliente.ativo.toLowerCase() === 'true' : !!cliente.ativo;
+      if (cliente.dataCadastro) {
+        const parsedDate = parseISO(cliente.dataCadastro);
+        if (isValid(parsedDate)) {
+          dataFormatada = format(parsedDate, 'dd/MM/yyyy');
         }
-    )
+      }
+      return { ...cliente, dataCadastro: dataFormatada, ativo: ativoBooleano };
+    });
+
 
     }
   }

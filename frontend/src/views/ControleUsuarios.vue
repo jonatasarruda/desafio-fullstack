@@ -1,11 +1,9 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <v-container fluid>
+    <h1 class="my-5 px-5">Controle de usuários</h1>
+    
     <v-card class="my-5 mx-5">
-      <v-card-title>
-        Controle de Usuários
-        <v-spacer></v-spacer>
-      </v-card-title>
       <TableGenerica
         :headers="userHeaders"
         :items="userItems"
@@ -16,28 +14,33 @@
         :has-actions-slot="true" 
       >
         
-        <template v-slot:top>
-        <div class="d-flex justify-content-center">
+      <template v-slot:top>
+        <div class="d-flex justify-content-center py-5">
           <v-text-field
             v-model="searchTerm"
             label="Buscar Usuário..."
-            class = "mx-2 px-2"
+            class = "mx-8 "
             prepend-inner-icon="mdi-magnify"
             clearable
           ></v-text-field>
-           <v-btn
-            elevation="2"
-            raised
-            @click="cadastroUsuario()"
-            color = primary
-            class = "mx-2 px-2"
-            >Cadastrar Novo Usuário</v-btn> 
+          <div class= "py-2">
+            <!-- Botão para telas maiores (md e acima) -->
+            <v-btn
+              v-if="!$vuetify.breakpoint.smAndDown"
+              elevation="2"
+              raised
+              @click="cadastroUsuario()"
+              color="primary"
+              class="mx-5 py-5"
+            >Cadastrar Novo Usuário</v-btn>
+
+          </div> 
         </div>
-        </template>
+      </template>
         
-        <template v-slot:item.status="{ item }">
-          <v-chip :color="getStatusColor(item.status)" small dark>
-            {{ item.status === 'active' ? 'Ativo' : 'Inativo' }}
+        <template v-slot:item.ativo="{ item }">
+          <v-chip :color="getStatusColor(item.ativo)" small dark>
+            {{ item.ativo ? 'Ativo' : 'Inativo' }}
           </v-chip>
         </template>
 
@@ -68,6 +71,31 @@
 
       </TableGenerica>
     </v-card>
+
+    <!-- Botão FAB para telas menores (sm e abaixo) -->
+    <v-tooltip left>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          v-if="$vuetify.breakpoint.smAndDown"
+          fab
+          dark
+          small
+          fixed
+          bottom
+          right
+          color="primary"
+          class="ma-4" 
+          elevation="4"
+          @click="cadastroUsuario()" 
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </template>
+      <span>Cadastrar Novo Usuário</span>
+    </v-tooltip>
+
     <ModalGenerico
       v-model="exibirModal.show"
       :item-to-edit="exibirModal.currentItem"
@@ -82,6 +110,7 @@
 import ModalGenerico from '@/components/ModalGenerico.vue';
 import TableGenerica from '@/components/TableGenerica.vue';
 import apiService from '@/services/apiService.js';
+import { format, parseISO, isValid } from 'date-fns';
 
 export default {
   name: 'UsuarioView',
@@ -102,7 +131,7 @@ export default {
       userHeaders: [
         { text: 'ID', value: 'id', sortable: true, width: '10%' },
         { text: 'Email', value: 'email', sortable: true},
-        // { text: 'Status', value: 'status', sortable: false, align: 'center' },
+        { text: 'Status', value: 'ativo', sortable: false, align: 'center' },
         { text: 'Data de cadastro', value: 'dataCadastro', sortable: true, align: 'center' },
         { text: 'Ações', value: 'actions', sortable: false, align: 'right', width: '150px' } 
       ],
@@ -113,24 +142,25 @@ export default {
             v => !!v || 'Email é obrigatório',
             v => /.+@.+\..+/.test(v) || 'Email deve ser válido',
           ], cols: 12 },
-        { model: 'senha', label: 'Senha', type: 'text', required: true, cols: 12 },
+        { model: 'senha', label: 'Senha', type: 'password', required: true, cols: 12 },
 
-        // { model: 'status', label: 'Status*', type: 'select', required: true,
-        //   items: [ { text: 'Ativo', value: 'active' },{ text: 'Inativo', value: 'inactive' }],
-        //   itemText: 'text', // Chave para o texto de exibição no select
-        //   itemValue: 'value', // Chave para o valor no select
-        //   cols: 12,
-        // },
+        { model: 'ativo', label: 'Status*', type: 'select', required: true,
+          items: [ { text: 'Ativo', value: true },{ text: 'Inativo', value: false }],
+          itemText: 'text', // Chave para o texto de exibição no select
+          itemValue: 'value', // Chave para o valor no select
+          cols: 12,
+        },
       ],
     };
   },
   methods: {
-    getStatusColor(status) {
-      return status === 'active' ? 'green' : 'red';
+    getStatusColor(ativo) {
+      return ativo ? 'green' : 'red';
     },
     editarUsuario(usuario) {
-      this.exibirModal.currentItem = usuario; 
-      usuario.senha = '';
+
+      this.exibirModal.currentItem = { ...usuario, ativo: !!usuario.ativo, senha: '' }; 
+
       this.exibirModal.title = `Editar Usuário:`;
       this.exibirModal.novoCadastro = false;
       this.exibirModal.show = true;
@@ -147,20 +177,31 @@ export default {
     },
     async handleSaveUser(savedItem) {
         if (this.exibirModal.novoCadastro) {
-            apiService.cadastrarNovo('/usuarios', savedItem)
+          const payload = { ...savedItem, ativo: !!savedItem.ativo };
+            apiService.cadastrarNovo('/usuarios', payload)
             .then(response => {
-                this.userItems.push({...response})
+                this.userItems.push({...response, ativo: !!response.ativo});
                 console.log('Usuário cadastrado:', response);
         })
         } else {
         const index = this.userItems.findIndex(u => u.id === savedItem.id);
         if (index !== -1) {
-            
-            await apiService.atualizar('/usuarios', savedItem.id, savedItem)
-                      .then(response =>{
-                        Object.assign(this.userItems[index], response)
+            const originalItem = this.userItems[index]; // Guarda o item original da lista
+             // Garante que 'ativo' seja booleano antes de enviar
+            const payload = { ...savedItem, ativo: !!savedItem.ativo };
+            await apiService.atualizar('/usuarios', savedItem.id, payload)
+                      .then(responseFromServer =>{
+                       // Atualiza o item na lista, preservando o dataCadastro original (já formatado)
+                       Object.assign(this.userItems[index], {
+                         ...responseFromServer, // Dados da API (ex: email, id)
+                         ativo: !!responseFromServer.ativo, // Processa 'ativo' da resposta
+                         dataCadastro: originalItem.dataCadastro // Mantém o dataCadastro original formatado
+                       });
                       })
             console.log('Usuário atualizado:', this.userItems[index]);
+        } else{
+           console.error("Usuário não encontrado na lista para atualização:", savedItem.id);
+            // Adicionar notificação de erro para o usuário
         }
     }
       this.exibirModal.show = false;
@@ -169,12 +210,17 @@ export default {
   async created() {
     let resultadoUsuarios = await apiService.obterTodos('/usuarios');
 
-    resultadoUsuarios.forEach( usuario =>
-        {
-            this.userItems.push({...usuario})
+    this.userItems = resultadoUsuarios.map(usuario => {
+      let dataFormatada = 'Data inválida';
+      const ativoBooleano = typeof usuario.ativo === 'string' ? usuario.ativo.toLowerCase() === 'true' : !!usuario.ativo;
+      if (usuario.dataCadastro) {
+        const parsedDate = parseISO(usuario.dataCadastro);
+        if (isValid(parsedDate)) {
+          dataFormatada = format(parsedDate, 'dd/MM/yyyy'); // Removido HH:mm para consistência com Cliente, ajuste se necessário
         }
-    )
-
+      }
+      return { ...usuario, dataCadastro: dataFormatada, ativo: ativoBooleano };
+    });
     }
   }
 

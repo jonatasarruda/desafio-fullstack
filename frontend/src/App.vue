@@ -18,8 +18,22 @@ export default {
   },
 
   data: () => ({
-    usuarioLogado: true,
+    usuarioLogado: false,
   }),
-
+  methods: {
+    verificarStatusLogin() {
+      const token = localStorage.getItem('user-token');
+      this.usuarioLogado = !!token; // Define true se token existir, false caso contrário
+    }
+  },
+  created() {
+    this.verificarStatusLogin(); // Verifica ao criar o componente
+  },
+  watch: {
+    '$route'() {
+      // Verifica o status do login toda vez que a rota muda
+      this.verificarStatusLogin();
+    }
+  }
 };
 </script>

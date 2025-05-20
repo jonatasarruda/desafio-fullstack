@@ -10,7 +10,7 @@ const routes = [
         name: 'LoginSistema',
         component: Login,
         title: 'Login',
-        meta: { requiredAuth: false,
+        meta: { guest: true,
                 showInMenu: false
               }
     },
@@ -20,7 +20,8 @@ const routes = [
         component: DashboardGeral,
         title: 'Dashboard',
         meta: { requiredAuth: true,
-                showInMenu: true
+                showInMenu: true,
+                icon:"mdi-view-dashboard"
               }
     },
     {
@@ -29,8 +30,10 @@ const routes = [
         component: ControleClientes,
         title: 'Clientes',
         meta: { requiredAuth: true,
-                showInMenu: true
+                showInMenu: true,
+                icon: "mdi-account-box"
               }
+        
     },
     {
         path: '/atendimentos',
@@ -38,7 +41,8 @@ const routes = [
         component: ControleAtendimentos,
         title: 'Atendimentos',
         meta: { requiredAuth: true,
-                showInMenu: true
+                showInMenu: true,
+                icon: "mdi-clipboard-text"
               }
     },
     {
@@ -47,7 +51,8 @@ const routes = [
         component: ControleUsuarios,
         title: 'Usuarios',
         meta: { requiredAuth: true,
-                showInMenu: true
+                showInMenu: true,
+                icon: "mdi-human-greeting"
               }
     }
 ]

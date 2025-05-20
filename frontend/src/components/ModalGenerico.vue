@@ -23,15 +23,15 @@
               >
                 <!-- Campo de Texto -->
                 <v-text-field
-                  v-if="!field.type || field.type === 'text'"
+                  v-if="['text', 'password', 'email', 'number'].includes(field.type)"
                   v-model="localItem[field.model]"
                   :label="field.label"
+                  :type="field.type"
                   :required="field.required"
                   :rules="field.rules || (field.required ? [v => !!v || `${field.label} é obrigatório`] : [])"
                   :counter="field.counter"
                   :hint="field.hint"
                   :prepend-icon="field.prependIcon"
-                  :type="field.inputType || 'text'"
                 ></v-text-field>
 
                 <!-- Campo de Seleção (Select) -->
@@ -47,9 +47,6 @@
                   :prepend-icon="field.prependIcon"
                 ></v-select>
 
-                <!-- Adicione mais tipos de campos aqui (textarea, checkbox, date picker etc.) -->
-
-                <!-- Slot para campos customizados -->
                 <slot :name="`field.${field.model}`" :item="localItem" :field="field">
                 </slot>
               </v-col>
@@ -71,19 +68,19 @@
 export default {
   name: 'ModalGenerico',
    model: {
-    prop: 'dialog', // Indica que v-model deve usar a prop 'dialog'
-    event: 'update:dialog' // Indica que v-model deve escutar o evento 'update:dialog'
+    prop: 'dialog', 
+    event: 'update:dialog' 
   },
   props: {
-    dialog: { // Para v-model: controla a visibilidade
+    dialog: { 
       type: Boolean,
       required: true,
     },
-    itemToEdit: { // O objeto que está sendo editado ou null para um novo item
+    itemToEdit: { 
       type: Object,
       default: null,
     },
-    formFields: { // Array de objetos para definir os campos do formulário
+    formFields: { 
       type: Array,
       required: true,
       default: () => [],
@@ -95,19 +92,18 @@ export default {
   },
   data() {
     return {
-      localItem: null, // Cópia local do itemToEdit para evitar mutação direta da prop
+      localItem: null,
       validForm: true,
     };
   },
   watch: {
     dialog(newVal) {
       if (newVal) {
-        // Quando o diálogo abre, cria uma cópia do item ou um objeto vazio
         this.localItem = this.itemToEdit ? { ...this.itemToEdit } : this.formFields.reduce((obj, field) => {
           obj[field.model] = field.defaultValue !== undefined ? field.defaultValue : null;
           return obj;
         }, {});
-        this.$nextTick(() => { // Garante que o formulário esteja renderizado
+        this.$nextTick(() => {
           if (this.$refs.form) this.$refs.form.resetValidation();
         });
       }
