@@ -48,7 +48,7 @@ namespace DesafioFullstack.Api.Domain.Repositories.Classes
             if(EntidadeBanco == null)
                 return false;
 
-            _contexto.Entry(EntidadeBanco).CurrentValues.SetValues(entidade.DataInativacao);
+            _contexto.Entry(EntidadeBanco).CurrentValues.SetValues(entidade.Ativo);
             await _contexto.SaveChangesAsync();
 
             return true;

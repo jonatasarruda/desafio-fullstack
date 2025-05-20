@@ -11,7 +11,7 @@ namespace DesafioFullstack.Api.Contract.Cliente
         public long Id { get; set; }
         public string Nome { get; set; }
         public DateTime DataCadastro { get; set; }
-        public DateTime? DataInativacao { get; set; }
+        public bool Ativo { get; set; }
         public virtual ICollection<AtendimentoResponseContract> Atendimentos { get; set; }
          
     }

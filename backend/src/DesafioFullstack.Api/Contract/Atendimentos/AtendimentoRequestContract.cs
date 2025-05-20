@@ -10,6 +10,8 @@ namespace DesafioFullstack.Api.Contract.Atendimentos
         public string TextoAberturaAtendimento { get; set; } = string.Empty;
         public long UsuarioId { get; set; }
         public long ClienteId { get; set; }
+        public string Status { get; set; } = string.Empty;
+
     }
 
 }

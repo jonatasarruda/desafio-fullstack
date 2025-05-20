@@ -17,7 +17,7 @@ namespace DesafioFullstack.Api.Domain.Models
         [Required(ErrorMessage = "Campo de senha é obrigatório")]
         public string Senha { get; set; } = string.Empty;
         public DateTime DataCadastro { get; set; }
-        public DateTime? DataInativacao { get; set; }
+        public bool Ativo { get; set; }
         public virtual ICollection<Atendimento> Atendimentos { get; set; }
         public virtual ICollection<Parecer> Pareceres { get; set; }
         

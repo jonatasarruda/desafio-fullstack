@@ -32,8 +32,8 @@ namespace DesafioFullstack.Api.Data.Mappings
                 .IsRequired()
                 .HasColumnType("TIMESTAMP");
 
-            builder.Property(x => x.DataInativacao)
-                .HasColumnType("TIMESTAMP");
+            builder.Property(x => x.Ativo)
+                .HasColumnType("BOOLEAN");
         }
 }
 }

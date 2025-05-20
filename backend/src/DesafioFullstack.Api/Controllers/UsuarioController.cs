@@ -54,9 +54,10 @@ namespace DesafioFullstack.Api.Controllers
                 return Problem(ex.Message);
             }
         }
-        
+
         [HttpGet]
         [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> Obter()
         {
             try
@@ -86,7 +87,7 @@ namespace DesafioFullstack.Api.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> Atualizar(long Id, UsuarioRequestContract contrato)
         {
             try

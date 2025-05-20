@@ -13,7 +13,7 @@ namespace DesafioFullstack.Api.Domain.Models
         [Required(ErrorMessage = "Campo de nome é obrigatório")]
         public string Nome { get; set; } = string.Empty;
         public DateTime DataCadastro { get; set; }
-        public DateTime? DataInativacao { get; set; }
+        public bool Ativo { get; set; }
         public virtual ICollection<Atendimento> Atendimentos { get; set;}
     
     }

@@ -14,7 +14,6 @@ namespace DesafioFullstack.Api.Domain.Models
         [Required(ErrorMessage = "Informe o texto de abertura do atendimento")]
         public string TextoAberturaAtendimento { get; set;} = string.Empty;
         public DateTime DataCadastro { get; set; }
-        public DateTime? DataInativacao { get; set; }
         [Required(ErrorMessage = "Informe o usuário do atendimento")]
         public long UsuarioId { get; set; }
         [ForeignKey("UsuarioId")]
@@ -23,6 +22,8 @@ namespace DesafioFullstack.Api.Domain.Models
         public long ClienteId { get; set; }
         [ForeignKey("ClienteId")]
         public Cliente Cliente { get; set; }
+        public string Status { get; set; }
+        
         public virtual ICollection<Parecer> Pareceres { get; set; }
         
     }

@@ -21,7 +21,7 @@ namespace DesafioFullstack.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> Adicionar(ParecerRequestContract contrato)
         {
             try
@@ -35,7 +35,7 @@ namespace DesafioFullstack.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> Obter()
         {
             try
@@ -51,7 +51,7 @@ namespace DesafioFullstack.Api.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> Obter(long id)
         {
             try
@@ -67,7 +67,7 @@ namespace DesafioFullstack.Api.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<IActionResult> Atualizar(long id, ParecerRequestContract contrato)
         {
             try

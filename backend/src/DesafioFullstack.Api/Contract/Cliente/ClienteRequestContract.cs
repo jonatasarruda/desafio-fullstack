@@ -8,6 +8,7 @@ namespace DesafioFullstack.Api.Contract.Cliente
     public class ClienteRequestContract
     {
         public string Nome { get; set; } = string.Empty;
+        public bool Ativo { get; set; }
     }
 
 }
