@@ -181,7 +181,11 @@ export default {
             .then(response => { // response é o usuário recém-cadastrado da API
                 const processedNewUser = this.processSingleItem(response); // Processa o novo usuário
                 this.userItems.push(processedNewUser); // Adiciona o usuário processado à lista
-                console.log('Usuário cadastrado:', response);
+                this.$store.dispatch('snackbar/showSnackbar', {
+                  message: `Usuário ${response.email} cadastrado com sucesso!`,
+                  color: 'success',
+                });
+                // console.log('Usuário cadastrado:', response);
         })
         } else {
         const index = this.userItems.findIndex(u => u.id === savedItem.id);
@@ -197,11 +201,18 @@ export default {
                          ativo: !!responseFromServer.ativo, // Processa 'ativo' da resposta
                          dataCadastro: originalItem.dataCadastro // Mantém o dataCadastro original formatado
                        });
+                       this.$store.dispatch('snackbar/showSnackbar', {
+                         message: `Usuário ${responseFromServer.email} atualizado com sucesso!`,
+                         color: 'success',
+                       });
                       })
-            console.log('Usuário atualizado:', this.userItems[index]);
+            // console.log('Usuário atualizado:', this.userItems[index]);
         } else{
            console.error("Usuário não encontrado na lista para atualização:", savedItem.id);
-            // Adicionar notificação de erro para o usuário
+            this.$store.dispatch('snackbar/showSnackbar', {
+              message: 'Erro: Usuário não encontrado para atualização.',
+              color: 'error',
+            });
         }
     }
       this.exibirModal.show = false;
@@ -214,7 +225,11 @@ export default {
       this.userItems = this.processItems(resultadoUsuariosApi); // Usa o método do mixin com os dados brutos da API
     } catch (error) {
       console.error("Erro ao carregar usuários:", error);
-      // Adicionar notificação de erro para o usuário, se desejar
+      this.$store.dispatch('snackbar/showSnackbar', {
+        message: 'Erro ao carregar usuários.',
+        color: 'error',
+        timeout: 5000,
+      });
     } finally {
       this.isLoading = false;
     }

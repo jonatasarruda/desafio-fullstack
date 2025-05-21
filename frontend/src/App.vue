@@ -4,17 +4,21 @@
     <v-main>
       <router-view/>
     </v-main>
+    <GlobalSnackbar/>
   </v-app>
 </template>
 
 <script>
 import MenuSistema from '../src/components/MenuSistema.vue';
+import GlobalSnackbar from '../src/components/GlobalSnackbar.vue';
+
 
 
 export default {
   name: 'App',
   components: {
-    MenuSistema
+    MenuSistema,
+    GlobalSnackbar
   },
 
   data: () => ({

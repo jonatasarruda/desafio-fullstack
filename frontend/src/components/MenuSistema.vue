@@ -155,6 +155,10 @@ import apiService from '@/services/apiService';
           localStorage.removeItem('user-id');    // Remove o ID do usuário, se houver
           apiService.setAuthHeader(null);       // Limpa o header de autorização no apiService
           
+          this.$store.dispatch('snackbar/showSnackbar', {
+            message: 'Logout realizado com sucesso!',
+            color: 'info',
+          });
           this.$router.push('/login').catch(err => {
             if (err.name !== 'NavigationDuplicated') throw err;
           });
