@@ -36,7 +36,6 @@
                             hide-details
                             @click.native.stop
                           ></v-text-field>
-                          <!-- Botão para telas maiores (md e acima) -->
                           <v-btn
                             v-if="!$vuetify.breakpoint.smAndDown"
                             @click.native.stop="inicarNovoAtendimento()"
@@ -187,7 +186,6 @@
               <v-card-text class="flex-grow-1 overflow-y-auto">
                 <v-row class="fill-height">                  
 
-                  <!-- Coluna Esquerda: Informações do Atendimento -->
                   <v-col md="7" cols="12">
                     <h3 class="mb-3">Dados do Atendimento</h3>
                     <v-form ref="detailFormRef" :readonly="visualizacaoDetalhes === 'view'">
@@ -254,7 +252,6 @@
                     </v-form>
                   </v-col>
 
-                  <!-- Coluna Direita: Pareceres -->
 
                   <v-col md="5" cols="12">
                     <h3 class="mb-3">Pareceres do Atendimento</h3>
@@ -280,7 +277,6 @@
                             </v-tooltip>
                           </v-list-item-action>
 
-                          <!-- Modo de Edição do Parecer -->
                           <v-list-item-content v-if="editingParecerId === parecer.id">
                             <v-textarea
                               v-model="editedParecerText"
@@ -363,8 +359,8 @@ export default {
       isLoadingOverall: false,
       isSaving: false,
       searchTerm: '',
-      activeWindow: 0, // 0 for list, 1 for detail
-      visualizacaoDetalhes: 'view', // 'view', 'edit', 'create'
+      activeWindow: 0, 
+      visualizacaoDetalhes: 'view', 
       atendimentoAtual: null,
       originalatendimentoAtual: null,
       atendimentoHeaders: [
@@ -373,7 +369,7 @@ export default {
         { text: 'Usuário', value: 'usuarioEmail', sortable: true },
         { text: 'Data', value: 'dataAtendimentoFormatted', sortable: true },
         { text: 'Status', value: 'status', sortable: true, align: 'center' },
-        { text: 'Ações', value: 'actions', sortable: false, align: 'center', width: '150px' } // Aumentei um pouco a largura para os 3 botões
+        { text: 'Ações', value: 'actions', sortable: false, align: 'center', width: '150px' }
       ],
       atendimentoItems: [],
       clientesList: [],
@@ -487,11 +483,19 @@ export default {
         this.clientesList = clientesApi;
         this.usuariosList = usuariosApi;
       } catch (error) {
-        console.error("Erro ao carregar dados iniciais:", error);
-        // TODO: Adicionar notificação de erro para o usuário (ex: snackbar)
+        console.error("Erro ao carregar dados iniciais:", error);        
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'Erro ao carregar dados iniciais. Tente recarregar a página.',
+          color: 'error',
+          timeout: 5000,
+        });
       } finally {
         this.isLoadingTable = false;
         this.isLoadingOverall = false;
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'Dados carregados!',
+          color: 'info',
+        });
       }
     },
 
@@ -506,7 +510,6 @@ export default {
       this.isSavingParecer = false;
       this.novoParecerTexto = '';
       this.$refs.detailFormRef?.resetValidation();
-      // Não limpamos os filtros da lista principal aqui
     },
 
     async navegarParaDetalhes(atendimento, mode = 'view') {
@@ -516,7 +519,7 @@ export default {
         descricao: atendimento.textoAberturaAtendimento || '' 
       };
 
-      if (atendimentoData.dataAtendimento && typeof atendimentoData.dataAtendimento === 'string' && !/^\d{4}-\d{2}-\d{2}$/.test(atendimentoData.dataAtendimento)) { // Verifica se não é YYYY-MM-DD
+      if (atendimentoData.dataAtendimento && typeof atendimentoData.dataAtendimento === 'string' && !/^\d{4}-\d{2}-\d{2}$/.test(atendimentoData.dataAtendimento)) {
         const parsedDate = parseISO(atendimentoData.dataAtendimento); 
 
         if (isValid(parsedDate)) { 
@@ -536,10 +539,10 @@ export default {
 
 
       this.atendimentoAtual = { ...atendimentoData };
-      this.originalatendimentoAtual = JSON.parse(JSON.stringify(atendimentoData)); // Deep copy
+      this.originalatendimentoAtual = JSON.parse(JSON.stringify(atendimentoData)); 
       this.visualizacaoDetalhes = mode;
       
-      this.pareceres = []; // Limpa pareceres antigos
+      this.pareceres = [];
       if (mode !== 'create' && atendimento.id) {
         await this.carregaPareceres(atendimento.id);
       }
@@ -575,10 +578,10 @@ export default {
 
     edicaoAtendimento() {
       if (this.atendimentoAtual && this.atendimentoAtual.status === 'cancelado' || this.atendimentoAtual && this.atendimentoAtual.status === 'concluido') {
-        // TODO: Adicionar uma notificação para o usuário informando que não pode editar um atendimento cancelado.
+       
         return;
       }
-      if (this.atendimentoAtual) { // Se não estiver cancelado, permite a edição
+      if (this.atendimentoAtual) { 
         this.visualizacaoDetalhes = 'edit';
       }
     },
@@ -602,26 +605,22 @@ export default {
         const payload = { 
           ...this.atendimentoAtual, 
           textoAberturaAtendimento: this.atendimentoAtual.descricao,
-          // Ao enviar para a API, o campo de data do formulário (this.atendimentoAtual.dataAtendimento)
-          // deve ser mapeado para o campo que a API espera para a data principal, que é 'dataCadastro'.
           dataCadastro: this.atendimentoAtual.dataAtendimento 
         };
-        delete payload.descricao; // Remove a propriedade 'descricao' do frontend antes de enviar
-        delete payload.dataAtendimento; // Remove dataAtendimento do payload, pois enviaremos como dataCadastro
+        delete payload.descricao; 
+        delete payload.dataAtendimento; 
 
         if (this.visualizacaoDetalhes === 'create') {
           atendimentoSalvo = await apiService.cadastrarNovo('/atendimentos', payload);
-          // A API retorna atendimentoSalvo.dataCadastro (provavelmente ISO)
-          // Precisamos formatá-lo para YYYY-MM-DD para a lista e para o formulário
+
           let dataFormatadaInputSalvo = null;
-          if(atendimentoSalvo.dataCadastro && typeof atendimentoSalvo.dataCadastro === 'string') { // <--- USA dataCadastro DA RESPOSTA DA API
-            const parsed = parseISO(atendimentoSalvo.dataCadastro); // <--- USA dataCadastro DA RESPOSTA DA API
+          if(atendimentoSalvo.dataCadastro && typeof atendimentoSalvo.dataCadastro === 'string') { 
+            const parsed = parseISO(atendimentoSalvo.dataCadastro); 
             if(isValid(parsed)) dataFormatadaInputSalvo = format(parsed, 'yyyy-MM-dd');
           }
 
           const newItem = { 
             ...atendimentoSalvo, 
-            // Usa a data formatada para o input no item da lista
             dataAtendimento: dataFormatadaInputSalvo
           };
           this.atendimentoItems.push(newItem);
@@ -631,11 +630,10 @@ export default {
           this.visualizacaoDetalhes = 'view';
         } else if (this.visualizacaoDetalhes === 'edit' && this.atendimentoAtual.id) {
           atendimentoSalvo = await apiService.atualizar('/atendimentos', this.atendimentoAtual.id, payload);
-          // A API retorna atendimentoSalvo.dataCadastro (provavelmente ISO)
-          // Precisamos formatá-lo para YYYY-MM-DD para a lista e para o formulário
+ 
           let dataFormatadaInputSalvo = null;
-          if(atendimentoSalvo.dataCadastro && typeof atendimentoSalvo.dataCadastro === 'string') { // <--- USA dataCadastro DA RESPOSTA DA API
-            const parsed = parseISO(atendimentoSalvo.dataCadastro); // <--- USA dataCadastro DA RESPOSTA DA API
+          if(atendimentoSalvo.dataCadastro && typeof atendimentoSalvo.dataCadastro === 'string') { 
+            const parsed = parseISO(atendimentoSalvo.dataCadastro); 
             if(isValid(parsed)) dataFormatadaInputSalvo = format(parsed, 'yyyy-MM-dd');
           }
 
@@ -643,21 +641,27 @@ export default {
           if (index !== -1) {
             const updatedItem = { 
               ...atendimentoSalvo, 
-              // Usa a data formatada para o input no item da lista
               dataAtendimento: dataFormatadaInputSalvo
             };
             this.$set(this.atendimentoItems, index, updatedItem);
             this.atendimentoAtual = { ...updatedItem, descricao: updatedItem.textoAberturaAtendimento || '' };
           } else {
-            // Fallback se o item não for encontrado na lista (improvável, mas seguro)
             this.atendimentoAtual = { ...atendimentoSalvo, descricao: atendimentoSalvo.textoAberturaAtendimento || '' };
           }
           this.originalatendimentoAtual = JSON.parse(JSON.stringify(this.atendimentoAtual));
+          this.$store.dispatch('snackbar/showSnackbar', {
+            message: `Atendimento #${atendimentoSalvo.id} atualizado com sucesso!`,
+            color: 'success',
+          });
           this.visualizacaoDetalhes = 'view';
         }
       } catch (error) {
         console.error('Erro ao salvar atendimento:', error);
-        // TODO: Adicionar notificação de erro
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'Erro ao salvar atendimento. Verifique os dados e tente novamente.',
+          color: 'error',
+          timeout: 5000,
+        });
       } finally {
         this.isSaving = false;
       }
@@ -668,15 +672,13 @@ export default {
       this.isLoadingPareceres = true;
       try {
 
-        const atendimentoComPareceres = await apiService.obterPorId('/atendimentos', atendimentoId); // Assumindo que obterPorId busca um único atendimento
-        
+        const atendimentoComPareceres = await apiService.obterPorId('/atendimentos', atendimentoId); 
         if (atendimentoComPareceres && atendimentoComPareceres.pareceres) {
-          // Assumindo que os pareceres também podem ser modelados se você tiver um Parecer.js
-          // Por agora, vamos apenas mapear os campos como antes.
+
           this.pareceres = atendimentoComPareceres.pareceres.map(apiParecer => {
             const usuario = this.usuariosList.find(u => u.id === apiParecer.usuarioId);
             return {
-              ...apiParecer, // Se tiver um modelo Parecer, seria new Parecer(apiParecer)
+              ...apiParecer,
               texto: apiParecer.descricaoParecer, 
               autor: usuario ? usuario.email : apiParecer.usuarioId, 
               data: apiParecer.dataCadastro 
@@ -687,8 +689,11 @@ export default {
         }
       } catch (error) {
         console.error(`Erro ao carregar pareceres para o atendimento ${atendimentoId}:`, error);
-        this.pareceres = [];
-        // TODO: Notificação de erro
+        this.pareceres = [];        
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'Erro ao carregar pareceres.',
+          color: 'error',
+        });
       } finally {
         this.isLoadingPareceres = false;
       }
@@ -696,8 +701,11 @@ export default {
 
     async adicionarNovoParecer() {
       if (!this.novoParecerTexto.trim() || !this.atendimentoAtual || !this.atendimentoAtual.id) {
-        // TODO: Adicionar notificação para o usuário (ex: texto do parecer é obrigatório)
-        return;
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'O texto do parecer não pode ser vazio.',
+          color: 'warning',
+        });
+        return; 
       }
 
       this.isAddingParecer = true;
@@ -706,8 +714,11 @@ export default {
          const userIdString = localStorage.getItem('user-id');
         if (!userInfoString) {
           console.error("Informações do usuário não encontradas. Faça login novamente.");
-          // TODO: Notificar o usuário e talvez redirecionar para o login
-          this.isAddingParecer = false;
+          this.$store.dispatch('snackbar/showSnackbar', {
+            message: 'Sessão expirada. Faça login novamente para adicionar parecer.',
+            color: 'error',
+            timeout: 5000,
+          });          this.isAddingParecer = false;
           return;
         }
 
@@ -727,11 +738,18 @@ export default {
         };
         this.pareceres.push(parecerSalvoParaFrontend);
         this.novoParecerTexto = '';
-        // TODO: Notificação de sucesso
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'Parecer adicionado com sucesso!',
+          color: 'success',
+        });
       } catch (error) {
         console.error("Erro ao adicionar novo parecer:", error);
-        // TODO: Adicionar notificação de erro para o usuário
-      } finally {
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'Erro ao adicionar parecer. Tente novamente.',
+          color: 'error',
+          timeout: 5000,
+        });
+      } finally { 
         this.isAddingParecer = false;
       }
     },
@@ -758,8 +776,11 @@ export default {
 
     async saveEditedParecer() {
       if (!this.editedParecerText || !this.editedParecerText.trim() || !this.editingParecerId) {
-        // TODO: Notificação para o usuário (texto do parecer é obrigatório)
-        return;
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'O texto do parecer não pode ser vazio.',
+          color: 'warning',
+        });
+        return; 
       }
       this.isSavingParecer = true;
       try {
@@ -780,11 +801,18 @@ export default {
           this.$set(this.pareceres, index, parecerAtualizadoParaFrontend);
         }
         this.cancelaEdicaoParecer();
-        // TODO: Notificação de sucesso
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'Parecer atualizado com sucesso!',
+          color: 'success',
+        });
       } catch (error) {
         console.error("Erro ao salvar parecer editado:", error);
-        // TODO: Adicionar notificação de erro
-      } finally {
+        this.$store.dispatch('snackbar/showSnackbar', {
+          message: 'Erro ao atualizar parecer. Tente novamente.',
+          color: 'error',
+          timeout: 5000,
+        });
+      } finally { 
         this.isSavingParecer = false;
       }
     },

@@ -110,7 +110,7 @@
 import ModalGenerico from '@/components/ModalGenerico.vue';
 import TableGenerica from '@/components/TableGenerica.vue';
 import apiService from '@/services/apiService.js';
-import formataDataEStatus from '@/mixins/formataDataEStatus'; // Importa o mixin
+import formataDataEStatus from '@/mixins/formataDataEStatus'; 
 
 export default {
   name: 'UsuarioView',
@@ -118,7 +118,7 @@ export default {
     TableGenerica,
     ModalGenerico
   },
-  mixins: [formataDataEStatus], // Usa o mixin
+  mixins: [formataDataEStatus], 
   data() {
     return {
       isLoading: false,
@@ -147,15 +147,15 @@ export default {
 
         { model: 'ativo', label: 'Status*', type: 'select', required: true,
           items: [ { text: 'Ativo', value: true },{ text: 'Inativo', value: false }],
-          itemText: 'text', // Chave para o texto de exibição no select
-          itemValue: 'value', // Chave para o valor no select
+          itemText: 'text', 
+          itemValue: 'value', 
           cols: 12,
         },
       ],
     };
   },
   methods: {
-    // getStatusColor é agora fornecido pelo mixin
+
     editarUsuario(usuario) {
 
       this.exibirModal.currentItem = { ...usuario, ativo: !!usuario.ativo, senha: '' }; 
@@ -172,41 +172,38 @@ export default {
     },
     excluirUsuario(user) {
       console.log('Excluir usuário:', user);
-      // Lógica para confirmar e excluir o usuário
     },
     async handleSaveUser(savedItem) {
         if (this.exibirModal.novoCadastro) {
           const payload = { ...savedItem, ativo: !!savedItem.ativo };
             apiService.cadastrarNovo('/usuarios', payload)
-            .then(response => { // response é o usuário recém-cadastrado da API
-                const processedNewUser = this.processSingleItem(response); // Processa o novo usuário
-                this.userItems.push(processedNewUser); // Adiciona o usuário processado à lista
+            .then(response => { 
+                const processedNewUser = this.processSingleItem(response);
+                this.userItems.push(processedNewUser); 
                 this.$store.dispatch('snackbar/showSnackbar', {
                   message: `Usuário ${response.email} cadastrado com sucesso!`,
                   color: 'success',
                 });
-                // console.log('Usuário cadastrado:', response);
         })
         } else {
         const index = this.userItems.findIndex(u => u.id === savedItem.id);
         if (index !== -1) {
-            const originalItem = this.userItems[index]; // Guarda o item original da lista
-             // Garante que 'ativo' seja booleano antes de enviar
+            const originalItem = this.userItems[index]; 
+            
             const payload = { ...savedItem, ativo: !!savedItem.ativo };
             await apiService.atualizar('/usuarios', savedItem.id, payload)
                       .then(responseFromServer =>{
-                       // Atualiza o item na lista, preservando o dataCadastro original (já formatado)
+                       
                        Object.assign(this.userItems[index], {
-                         ...responseFromServer, // Dados da API (ex: email, id)
-                         ativo: !!responseFromServer.ativo, // Processa 'ativo' da resposta
-                         dataCadastro: originalItem.dataCadastro // Mantém o dataCadastro original formatado
+                         ...responseFromServer, 
+                         ativo: !!responseFromServer.ativo, 
+                         dataCadastro: originalItem.dataCadastro 
                        });
                        this.$store.dispatch('snackbar/showSnackbar', {
                          message: `Usuário ${responseFromServer.email} atualizado com sucesso!`,
                          color: 'success',
                        });
                       })
-            // console.log('Usuário atualizado:', this.userItems[index]);
         } else{
            console.error("Usuário não encontrado na lista para atualização:", savedItem.id);
             this.$store.dispatch('snackbar/showSnackbar', {
@@ -222,7 +219,7 @@ export default {
     this.isLoading = true;
     try {
       const resultadoUsuariosApi = await apiService.obterTodos('/usuarios');
-      this.userItems = this.processItems(resultadoUsuariosApi); // Usa o método do mixin com os dados brutos da API
+      this.userItems = this.processItems(resultadoUsuariosApi);
     } catch (error) {
       console.error("Erro ao carregar usuários:", error);
       this.$store.dispatch('snackbar/showSnackbar', {

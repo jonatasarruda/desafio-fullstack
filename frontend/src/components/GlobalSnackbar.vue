@@ -30,8 +30,6 @@ export default {
         return this.$store.state.snackbar.show;
       },
       set(value) {
-        // Quando o v-snackbar tenta fechar (value se torna false),
-        // nós chamamos a mutação para atualizar o estado no Vuex.
         if (!value) {
           this.$store.commit('snackbar/HIDE_SNACKBAR');
         }
@@ -39,8 +37,7 @@ export default {
     },
   },
   methods: {
-    // mapMutations não é estritamente necessário aqui se usarmos o setter de 'show'
-    // mas é bom para o botão 'Fechar' explícito.
+
     ...mapMutations('snackbar', ['HIDE_SNACKBAR']),
     closeSnackbar() {
       this.HIDE_SNACKBAR();

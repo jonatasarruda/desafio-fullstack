@@ -108,7 +108,7 @@
 import ModalGenerico from '@/components/ModalGenerico.vue';
 import TableGenerica from '@/components/TableGenerica.vue';
 import apiService from '@/services/apiService.js';
-import formataDataEStatus from '@/mixins/formataDataEStatus'; // Importa o mixin
+import formataDataEStatus from '@/mixins/formataDataEStatus'; 
 
 export default {
   name: 'ClienteView',
@@ -116,7 +116,7 @@ export default {
     TableGenerica,
     ModalGenerico
   },
-  mixins: [formataDataEStatus], // Usa o mixin
+  mixins: [formataDataEStatus], 
   data() {
     return {
       isLoading: false,
@@ -130,7 +130,7 @@ export default {
       clientHeaders: [
         { text: 'ID', value: 'id', sortable: true, width: '10%' },
         { text: 'Nome', value: 'nome', sortable: true},
-        { text: 'Status', value: 'ativo', sortable: false, align: 'center' }, // Alterado value para 'ativo'
+        { text: 'Status', value: 'ativo', sortable: false, align: 'center' }, 
         { text: 'Data de cadastro', value: 'dataCadastro', sortable: true, align: 'center' },
         { text: 'Ações', value: 'actions', sortable: false, align: 'right', width: '150px' } 
       ],
@@ -141,17 +141,17 @@ export default {
             v => !!v || 'Nome é obrigatório',
           ], cols: 12 },
         
-        { model: 'ativo', label: 'Status*', type: 'select', required: true, // Alterado model para 'ativo'
-          items: [ { text: 'Ativo', value: true },{ text: 'Inativo', value: false }], // Alterado para booleanos
-          itemText: 'text', // Chave para o texto de exibição no select
-          itemValue: 'value', // Chave para o valor no select
+        { model: 'ativo', label: 'Status*', type: 'select', required: true, 
+          items: [ { text: 'Ativo', value: true },{ text: 'Inativo', value: false }], 
+          itemText: 'text', 
+          itemValue: 'value', 
           cols: 12,
         },
       ],
     };
   },
   methods: {
-    // getStatusColor é agora fornecido pelo mixin
+
     editarCliente(cliente) {
       this.exibirModal.currentItem = { ...cliente, ativo: !!cliente.ativo }; 
       this.exibirModal.title = `Editar Cliente:`;
@@ -166,15 +166,15 @@ export default {
     },
     excluirCliente(user) {
       console.log('Excluir usuário:', user);
-      // Lógica para confirmar e excluir o usuário
+
     },
     async handleSaveClient(savedItem) {
         if (this.exibirModal.novoCadastro) {
             const payload = { ...savedItem, ativo: !!savedItem.ativo };
             apiService.cadastrarNovo('/clientes', payload)
-            .then(response => { // response é o cliente recém-cadastrado da API
-                const processedNewClient = this.processSingleItem(response); // Processa o novo cliente
-                this.clientItems.push(processedNewClient); // Adiciona o cliente processado à lista
+            .then(response => { 
+                const processedNewClient = this.processSingleItem(response); 
+                this.clientItems.push(processedNewClient); 
                 console.log('Cliente cadastrado:', response);
         })
         } else {
@@ -193,7 +193,6 @@ export default {
             console.log('Cliente atualizado:', this.clientItems[index]);
         } else {
           console.error("Cliente não encontrado na lista para atualização:", savedItem.id);
-          // Adicionar notificação de erro para o usuário
         }
     }
       this.exibirModal.show = false;
@@ -203,7 +202,7 @@ export default {
     this.isLoading = true;
     try {
       const resultadoClientesApi = await apiService.obterTodos('/clientes');
-      this.clientItems = this.processItems(resultadoClientesApi); // Usa o método do mixin com os dados brutos da API
+      this.clientItems = this.processItems(resultadoClientesApi); 
     } catch (error) {
       console.error("Erro ao carregar clientes:", error);
     } finally {
