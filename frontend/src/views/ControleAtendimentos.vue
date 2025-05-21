@@ -12,7 +12,7 @@
               </v-card-title>              
               <TableGenerica
                 :headers="atendimentoHeaders"
-                :items="processedAtendimentoItems"
+                :items="atendimentoItensProcessados"
                 :loading="isLoadingTable"
                 :search="searchTerm"
                 item-key="id"
@@ -171,7 +171,7 @@
                 <v-btn icon @click="navigateToListView" class="mr-2">
                   <v-icon>mdi-arrow-left</v-icon>
                 </v-btn>
-                {{ formTitleDetailView }}
+                {{ tituloFormView }}
                 <v-spacer></v-spacer>
                 <v-btn v-if="visualizacaoDetalhes === 'view'" color="primary" @click="edicaoAtendimento" class="mr-2" :disabled="atendimentoAtual && atendimentoAtual.status === 'cancelado' || atendimentoAtual && atendimentoAtual.status === 'concluido'">
                   <v-icon left>mdi-pencil</v-icon>Editar
@@ -400,7 +400,7 @@ export default {
     };
   },
   computed: {
-    formTitleDetailView() {
+    tituloFormView() {
       if (!this.atendimentoAtual) return 'Atendimento';
       if (this.visualizacaoDetalhes === 'create') return 'Novo Atendimento';
       if (this.visualizacaoDetalhes === 'edit') return `Editar Atendimento: #${this.atendimentoAtual.id}`;
@@ -415,8 +415,8 @@ export default {
     },
 
 
-    filteredItems() {
-      let items = [...this.atendimentoItems]; // Começa com todos os itens
+    itensFiltrados() {
+      let items = [...this.atendimentoItems]; 
 
       if (this.filtros.dataInicio) {
         items = items.filter(at => at.dataAtendimento && at.dataAtendimento >= this.filtros.dataInicio);
@@ -432,8 +432,8 @@ export default {
       }
       return items;
     },
-    processedAtendimentoItems() {
-      return this.filteredItems.map(at => { // Usa filteredItems em vez de atendimentoItems
+    atendimentoItensProcessados() {
+      return this.itensFiltrados.map(at => { 
         const cliente = this.clientesList.find(c => c.id === at.clienteId);
         const usuario = this.usuariosList.find(u => u.id === at.usuarioId);
         let dataFormatada = 'N/D';
@@ -465,32 +465,27 @@ export default {
       this.isLoadingTable = true;
       this.isLoadingOverall = true;
       try {
-        const [atendimentos, clientes, usuarios] = await Promise.all([
-          apiService.obterTodos('/atendimentos'),
-          apiService.obterTodos('/clientes'),
-          apiService.obterTodos('/usuarios')
+        const [atendimentosApi, clientesApi, usuariosApi] = await Promise.all([
+          apiService.obterTodos('/atendimentos'), 
+          apiService.obterTodos('/clientes'),   
+          apiService.obterTodos('/usuarios')    
         ]);
     
-
-        this.atendimentoItems = atendimentos.map(at => {
-          let formattedDate = null;
- 
-          if (at.dataCadastro && typeof at.dataCadastro === 'string') { // Alterado para at.dataCadastro
-            const parsed = parseISO(at.dataCadastro); // Alterado para at.dataCadastro
-   
+        this.atendimentoItems = atendimentosApi.map(apiAt => {
+          let dataFormatadaParaInput = null;
+          if (apiAt.dataCadastro && typeof apiAt.dataCadastro === 'string') { 
+            const parsed = parseISO(apiAt.dataCadastro); 
             if (isValid(parsed)) {
-              formattedDate = format(parsed, 'yyyy-MM-dd'); // Converte para o formato do input date
-        } 
-      }
-          // Mapeia textoAberturaAtendimento da API para descricao no frontend
-          const descricaoFrontend = at.textoAberturaAtendimento;
+              dataFormatadaParaInput = format(parsed, 'yyyy-MM-dd');
+            }
+          }
           return { 
-            ...at, 
-            descricao: descricaoFrontend, // Usar 'descricao' internamente
-            dataAtendimento: formattedDate };
+            ...apiAt, 
+            dataAtendimento: dataFormatadaParaInput 
+          };
         });
-        this.clientesList = clientes;
-        this.usuariosList = usuarios;
+        this.clientesList = clientesApi;
+        this.usuariosList = usuariosApi;
       } catch (error) {
         console.error("Erro ao carregar dados iniciais:", error);
         // TODO: Adicionar notificação de erro para o usuário (ex: snackbar)
@@ -516,16 +511,25 @@ export default {
 
     async navegarParaDetalhes(atendimento, mode = 'view') {
       this.isLoadingOverall = true;
-      let atendimentoData = { ...atendimento };
+      let atendimentoData = { 
+        ...atendimento, 
+        descricao: atendimento.textoAberturaAtendimento || '' 
+      };
 
-      if (atendimentoData.dataAtendimento) {
-        const parsedDate = parseISO(atendimentoData.dataAtendimento);
-        if (isValid(parsedDate)) {
+      if (atendimentoData.dataAtendimento && typeof atendimentoData.dataAtendimento === 'string' && !/^\d{4}-\d{2}-\d{2}$/.test(atendimentoData.dataAtendimento)) { // Verifica se não é YYYY-MM-DD
+        const parsedDate = parseISO(atendimentoData.dataAtendimento); 
+
+        if (isValid(parsedDate)) { 
             atendimentoData.dataAtendimento = format(parsedDate, 'yyyy-MM-dd');
         } else {
             atendimentoData.dataAtendimento = null; 
         }
+      } else if (!atendimentoData.dataAtendimento && mode === 'create') { 
+
+        atendimentoData.dataAtendimento = format(new Date(), 'yyyy-MM-dd'); 
+
       } else if (mode === 'create') {
+
          atendimentoData.dataAtendimento = format(new Date(), 'yyyy-MM-dd');
          atendimentoData.status = 'aberto';
       }
@@ -597,53 +601,57 @@ export default {
         let atendimentoSalvo;
         const payload = { 
           ...this.atendimentoAtual, 
-          textoAberturaAtendimento: this.atendimentoAtual.descricao };
-        delete payload.descricao; 
-
-     
-        const farmatarDataApi = (apiDateStr, fallbackDateStr) => {
-          if (typeof apiDateStr === 'string') {
-            const parsed = parseISO(apiDateStr); 
-            if (isValid(parsed)) {
-              return format(parsed, 'yyyy-MM-dd');
-            }
-          }
-          return fallbackDateStr; // Retorna a data do payload se a da API for inválida/ausente
+          textoAberturaAtendimento: this.atendimentoAtual.descricao,
+          // Ao enviar para a API, o campo de data do formulário (this.atendimentoAtual.dataAtendimento)
+          // deve ser mapeado para o campo que a API espera para a data principal, que é 'dataCadastro'.
+          dataCadastro: this.atendimentoAtual.dataAtendimento 
         };
+        delete payload.descricao; // Remove a propriedade 'descricao' do frontend antes de enviar
+        delete payload.dataAtendimento; // Remove dataAtendimento do payload, pois enviaremos como dataCadastro
 
         if (this.visualizacaoDetalhes === 'create') {
           atendimentoSalvo = await apiService.cadastrarNovo('/atendimentos', payload);
-          
-          const finalDate = farmatarDataApi(atendimentoSalvo.dataCadastro, payload.dataAtendimento); // Alterado para atendimentoSalvo.dataCadastro
-          // Mapeia a resposta da API de volta para o formato do frontend
-          const descricaoRetornada = atendimentoSalvo.textoAberturaAtendimento;
+          // A API retorna atendimentoSalvo.dataCadastro (provavelmente ISO)
+          // Precisamos formatá-lo para YYYY-MM-DD para a lista e para o formulário
+          let dataFormatadaInputSalvo = null;
+          if(atendimentoSalvo.dataCadastro && typeof atendimentoSalvo.dataCadastro === 'string') { // <--- USA dataCadastro DA RESPOSTA DA API
+            const parsed = parseISO(atendimentoSalvo.dataCadastro); // <--- USA dataCadastro DA RESPOSTA DA API
+            if(isValid(parsed)) dataFormatadaInputSalvo = format(parsed, 'yyyy-MM-dd');
+          }
 
           const newItem = { 
             ...atendimentoSalvo, 
-            descricao: descricaoRetornada, 
-            dataAtendimento: finalDate 
+            // Usa a data formatada para o input no item da lista
+            dataAtendimento: dataFormatadaInputSalvo
           };
           this.atendimentoItems.push(newItem);
           
-          this.atendimentoAtual = { ...newItem }; // Usa o newItem já mapeado
+          this.atendimentoAtual = { ...newItem, descricao: newItem.textoAberturaAtendimento || '' };
           this.originalatendimentoAtual = JSON.parse(JSON.stringify(this.atendimentoAtual));
           this.visualizacaoDetalhes = 'view';
         } else if (this.visualizacaoDetalhes === 'edit' && this.atendimentoAtual.id) {
           atendimentoSalvo = await apiService.atualizar('/atendimentos', this.atendimentoAtual.id, payload);
-          const finalDate = farmatarDataApi(atendimentoSalvo.dataCadastro, payload.dataAtendimento); // Alterado para atendimentoSalvo.dataCadastro
-          // Mapeia a resposta da API de volta para o formato do frontend
-          const descricaoRetornada = atendimentoSalvo.textoAberturaAtendimento;
+          // A API retorna atendimentoSalvo.dataCadastro (provavelmente ISO)
+          // Precisamos formatá-lo para YYYY-MM-DD para a lista e para o formulário
+          let dataFormatadaInputSalvo = null;
+          if(atendimentoSalvo.dataCadastro && typeof atendimentoSalvo.dataCadastro === 'string') { // <--- USA dataCadastro DA RESPOSTA DA API
+            const parsed = parseISO(atendimentoSalvo.dataCadastro); // <--- USA dataCadastro DA RESPOSTA DA API
+            if(isValid(parsed)) dataFormatadaInputSalvo = format(parsed, 'yyyy-MM-dd');
+          }
 
           const index = this.atendimentoItems.findIndex(at => at.id === this.atendimentoAtual.id);
           if (index !== -1) {
             const updatedItem = { 
               ...atendimentoSalvo, 
-              descricao: descricaoRetornada, 
-              dataAtendimento: finalDate 
+              // Usa a data formatada para o input no item da lista
+              dataAtendimento: dataFormatadaInputSalvo
             };
             this.$set(this.atendimentoItems, index, updatedItem);
+            this.atendimentoAtual = { ...updatedItem, descricao: updatedItem.textoAberturaAtendimento || '' };
+          } else {
+            // Fallback se o item não for encontrado na lista (improvável, mas seguro)
+            this.atendimentoAtual = { ...atendimentoSalvo, descricao: atendimentoSalvo.textoAberturaAtendimento || '' };
           }
-          this.atendimentoAtual = { ...this.atendimentoItems[index] }; // Pega o item atualizado da lista
           this.originalatendimentoAtual = JSON.parse(JSON.stringify(this.atendimentoAtual));
           this.visualizacaoDetalhes = 'view';
         }
@@ -663,13 +671,15 @@ export default {
         const atendimentoComPareceres = await apiService.obterPorId('/atendimentos', atendimentoId); // Assumindo que obterPorId busca um único atendimento
         
         if (atendimentoComPareceres && atendimentoComPareceres.pareceres) {
-          this.pareceres = atendimentoComPareceres.pareceres.map(p => {
-            const usuario = this.usuariosList.find(u => u.id === p.usuarioId);
+          // Assumindo que os pareceres também podem ser modelados se você tiver um Parecer.js
+          // Por agora, vamos apenas mapear os campos como antes.
+          this.pareceres = atendimentoComPareceres.pareceres.map(apiParecer => {
+            const usuario = this.usuariosList.find(u => u.id === apiParecer.usuarioId);
             return {
-              ...p, 
-              texto: p.descricaoParecer, 
-              autor: usuario ? usuario.email : p.usuarioId, 
-              data: p.dataCadastro 
+              ...apiParecer, // Se tiver um modelo Parecer, seria new Parecer(apiParecer)
+              texto: apiParecer.descricaoParecer, 
+              autor: usuario ? usuario.email : apiParecer.usuarioId, 
+              data: apiParecer.dataCadastro 
             };
           });
         } else {

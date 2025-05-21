@@ -110,7 +110,7 @@
 import ModalGenerico from '@/components/ModalGenerico.vue';
 import TableGenerica from '@/components/TableGenerica.vue';
 import apiService from '@/services/apiService.js';
-import { format, parseISO, isValid } from 'date-fns';
+import formataDataEStatus from '@/mixins/formataDataEStatus'; // Importa o mixin
 
 export default {
   name: 'UsuarioView',
@@ -118,6 +118,7 @@ export default {
     TableGenerica,
     ModalGenerico
   },
+  mixins: [formataDataEStatus], // Usa o mixin
   data() {
     return {
       isLoading: false,
@@ -154,9 +155,7 @@ export default {
     };
   },
   methods: {
-    getStatusColor(ativo) {
-      return ativo ? 'green' : 'red';
-    },
+    // getStatusColor é agora fornecido pelo mixin
     editarUsuario(usuario) {
 
       this.exibirModal.currentItem = { ...usuario, ativo: !!usuario.ativo, senha: '' }; 
@@ -179,8 +178,9 @@ export default {
         if (this.exibirModal.novoCadastro) {
           const payload = { ...savedItem, ativo: !!savedItem.ativo };
             apiService.cadastrarNovo('/usuarios', payload)
-            .then(response => {
-                this.userItems.push({...response, ativo: !!response.ativo});
+            .then(response => { // response é o usuário recém-cadastrado da API
+                const processedNewUser = this.processSingleItem(response); // Processa o novo usuário
+                this.userItems.push(processedNewUser); // Adiciona o usuário processado à lista
                 console.log('Usuário cadastrado:', response);
         })
         } else {
@@ -208,22 +208,18 @@ export default {
     },
   },
   async created() {
-    let resultadoUsuarios = await apiService.obterTodos('/usuarios');
-
-    this.userItems = resultadoUsuarios.map(usuario => {
-      let dataFormatada = 'Data inválida';
-      const ativoBooleano = typeof usuario.ativo === 'string' ? usuario.ativo.toLowerCase() === 'true' : !!usuario.ativo;
-      if (usuario.dataCadastro) {
-        const parsedDate = parseISO(usuario.dataCadastro);
-        if (isValid(parsedDate)) {
-          dataFormatada = format(parsedDate, 'dd/MM/yyyy'); // Removido HH:mm para consistência com Cliente, ajuste se necessário
-        }
-      }
-      return { ...usuario, dataCadastro: dataFormatada, ativo: ativoBooleano };
-    });
+    this.isLoading = true;
+    try {
+      const resultadoUsuariosApi = await apiService.obterTodos('/usuarios');
+      this.userItems = this.processItems(resultadoUsuariosApi); // Usa o método do mixin com os dados brutos da API
+    } catch (error) {
+      console.error("Erro ao carregar usuários:", error);
+      // Adicionar notificação de erro para o usuário, se desejar
+    } finally {
+      this.isLoading = false;
     }
   }
-
+}
 </script>
 
 <style scoped>

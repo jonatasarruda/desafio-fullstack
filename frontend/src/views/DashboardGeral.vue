@@ -37,6 +37,7 @@
 
 <script>
 import { parseISO, format, startOfMonth, isValid } from 'date-fns';
+import apiService from '@/services/apiService';
 // import Highcharts from 'highcharts'; // Importe se precisar acessar Highcharts diretamente
 // import stockInit from 'highcharts/modules/stock'; // Exemplo de módulo
 // if (typeof Highcharts === 'object') {
@@ -46,62 +47,13 @@ import { parseISO, format, startOfMonth, isValid } from 'date-fns';
 export default {
   name: 'DashboardGeral',
   data() {
-    // Mock de dados - em um app real, viria da API
-    const mockClientes = [
-      { id: 1, nome: 'Cliente Alpha' },
-      { id: 2, nome: 'Cliente Beta Soluções' },
-      { id: 3, nome: 'Cliente Gamma TI' },
-    ];
-    const mockUsuarios = [
-      { id: 1, nome: 'João Silva', email: 'joao@example.com' },
-      { id: 2, nome: 'Maria Oliveira', email: 'maria@example.com' },
-      { id: 3, nome: 'Carlos Pereira', email: 'carlos@example.com' },
-    ];
-    const mockAtendimentos = [
-      { id: 1, clienteId: 1, usuarioId: 1, dataCadastro: '2023-01-15T10:00:00Z', status: 'Fechado' },
-      { id: 2, clienteId: 2, usuarioId: 2, dataCadastro: '2023-01-20T11:00:00Z', status: 'Aberto' },
-      { id: 3, clienteId: 1, usuarioId: 1, dataCadastro: '2023-02-05T14:30:00Z', status: 'Fechado' },
-      { id: 4, clienteId: 3, usuarioId: 3, dataCadastro: '2023-02-10T09:00:00Z', status: 'Em Andamento' },
-      { id: 5, clienteId: 2, usuarioId: 1, dataCadastro: '2023-03-01T16:00:00Z', status: 'Aberto' },
-      { id: 6, clienteId: 1, usuarioId: 2, dataCadastro: '2023-03-12T12:00:00Z', status: 'Fechado' },
-      { id: 7, clienteId: 2, usuarioId: 3, dataCadastro: '2023-01-25T08:00:00Z', status: 'Fechado' },
-      { id: 8, clienteId: 3, usuarioId: 1, dataCadastro: '2023-03-18T17:00:00Z', status: 'Aberto' },
-      { id: 9, clienteId: 1, usuarioId: 2, dataCadastro: '2023-04-02T10:30:00Z', status: 'Em Andamento' },
-      { id: 10, clienteId: 2, usuarioId: 1, dataCadastro: '2023-04-05T11:45:00Z', status: 'Fechado' },
-    ];
+
 
     return {
       isLoading: true,
-      clientes: mockClientes,
-      usuarios: mockUsuarios,
-      atendimentos: mockAtendimentos,
-
-      chartOptionsColumn: {
-        chart: { type: 'column' },
-        title: { text: 'Vendas Mensais' },
-        xAxis: { categories: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'] },
-        yAxis: { title: { text: 'Vendas (R$)' } },
-        series: [{
-          name: 'Produto A',
-          data: [1000, 1200, 800, 1500, 2000]
-        }, {
-          name: 'Produto B',
-          data: [700, 600, 900, 1100, 1300]
-        }]
-      },
-      chartOptionsPie: {
-        chart: { type: 'pie' },
-        title: { text: 'Distribuição de Categorias' },
-        series: [{
-          name: 'Percentual',
-          data: [
-            { name: 'Eletrônicos', y: 45.0 },
-            { name: 'Moda', y: 26.8 },
-            { name: 'Casa', y: 12.8 },
-            { name: 'Outros', y: 15.4 }
-          ]
-        }]
-      },
+      clientes: [], 
+      usuarios: [], 
+      atendimentos: [], 
       chartOptionsAtendimentosPorCliente: {},
       chartOptionsAtendimentosPorUsuario: {},
       chartOptionsAtendimentosPorPeriodo: {},
@@ -113,20 +65,27 @@ export default {
   methods: {
     async loadDashboardData() {
       this.isLoading = true;
-      // Em um cenário real, você faria chamadas à API aqui
-      // await Promise.all([
-      //   apiService.get('/clientes').then(res => this.clientes = res.data),
-      //   apiService.get('/usuarios').then(res => this.usuarios = res.data),
-      //   apiService.get('/atendimentos').then(res => this.atendimentos = res.data),
-      // ]);
-      
-      // Simula um delay de carregamento
-      await new Promise(resolve => setTimeout(resolve, 500));
+  
+      try {
+        const [clientesRes, usuariosRes, atendimentosRes] = await Promise.all([
+          apiService.obterTodos('/clientes'), 
+          apiService.obterTodos('/usuarios'), 
+          apiService.obterTodos('/atendimentos') 
+        ]);
+        this.clientes = clientesRes;
+        this.usuarios = usuariosRes;
+        this.atendimentos = atendimentosRes;
 
-      this.processAtendimentosPorCliente();
-      this.processAtendimentosPorUsuario();
-      this.processAtendimentosPorPeriodo();
-      this.isLoading = false;
+        this.processAtendimentosPorCliente();
+        this.processAtendimentosPorUsuario();
+        this.processAtendimentosPorPeriodo();
+
+      } catch (error) {
+        console.error("Erro ao carregar dados do dashboard:", error);
+        // Adicionar notificação de erro para o usuário aqui, se desejar
+      } finally {
+        this.isLoading = false;
+      }
     },
 
     processAtendimentosPorCliente() {
@@ -166,7 +125,7 @@ export default {
 
       this.usuarios.forEach(usuario => {
         if (counts[usuario.id]) {
-          categories.push(usuario.nome || usuario.email); // Usa nome ou email
+          categories.push(usuario.nome || usuario.email); 
           data.push(counts[usuario.id]);
         }
       });

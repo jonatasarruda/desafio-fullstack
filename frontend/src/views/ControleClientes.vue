@@ -108,7 +108,7 @@
 import ModalGenerico from '@/components/ModalGenerico.vue';
 import TableGenerica from '@/components/TableGenerica.vue';
 import apiService from '@/services/apiService.js';
-import { format, parseISO, isValid } from 'date-fns';
+import formataDataEStatus from '@/mixins/formataDataEStatus'; // Importa o mixin
 
 export default {
   name: 'ClienteView',
@@ -116,6 +116,7 @@ export default {
     TableGenerica,
     ModalGenerico
   },
+  mixins: [formataDataEStatus], // Usa o mixin
   data() {
     return {
       isLoading: false,
@@ -150,9 +151,7 @@ export default {
     };
   },
   methods: {
-    getStatusColor(status) {
-      return status ? 'green' : 'red'; // Compara com booleano
-    },
+    // getStatusColor é agora fornecido pelo mixin
     editarCliente(cliente) {
       this.exibirModal.currentItem = { ...cliente, ativo: !!cliente.ativo }; 
       this.exibirModal.title = `Editar Cliente:`;
@@ -201,18 +200,7 @@ export default {
   },
   async created() {
     let resultadoClientes = await apiService.obterTodos('/clientes');
-
-    this.clientItems = resultadoClientes.map(cliente => {
-      let dataFormatada = 'Data inválida';
-      const ativoBooleano = typeof cliente.ativo === 'string' ? cliente.ativo.toLowerCase() === 'true' : !!cliente.ativo;
-      if (cliente.dataCadastro) {
-        const parsedDate = parseISO(cliente.dataCadastro);
-        if (isValid(parsedDate)) {
-          dataFormatada = format(parsedDate, 'dd/MM/yyyy');
-        }
-      }
-      return { ...cliente, dataCadastro: dataFormatada, ativo: ativoBooleano };
-    });
+    this.clientItems = this.processItems(resultadoClientes); // Usa o método do mixin
 
 
     }
