@@ -172,8 +172,9 @@ export default {
         if (this.exibirModal.novoCadastro) {
             const payload = { ...savedItem, ativo: !!savedItem.ativo };
             apiService.cadastrarNovo('/clientes', payload)
-            .then(response => {
-                this.clientItems.push({...response, ativo: !!response.ativo});
+            .then(response => { // response é o cliente recém-cadastrado da API
+                const processedNewClient = this.processSingleItem(response); // Processa o novo cliente
+                this.clientItems.push(processedNewClient); // Adiciona o cliente processado à lista
                 console.log('Cliente cadastrado:', response);
         })
         } else {
@@ -199,13 +200,17 @@ export default {
     },
   },
   async created() {
-    let resultadoClientes = await apiService.obterTodos('/clientes');
-    this.clientItems = this.processItems(resultadoClientes); // Usa o método do mixin
-
-
+    this.isLoading = true;
+    try {
+      const resultadoClientesApi = await apiService.obterTodos('/clientes');
+      this.clientItems = this.processItems(resultadoClientesApi); // Usa o método do mixin com os dados brutos da API
+    } catch (error) {
+      console.error("Erro ao carregar clientes:", error);
+    } finally {
+      this.isLoading = false;
     }
   }
-
+}
 </script>
 
 <style scoped>

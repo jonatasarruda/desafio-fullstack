@@ -21,16 +21,25 @@
           {{ usuario.nome }}<v-icon>mdi-chevron-down</v-icon>
         </v-btn>
       </template>
-        <v-list-item @click.stop class="white">
-          <v-list-item-action class="mr-2">
-            <v-switch
-              v-model="isDarkMode"
-              inset
-              color="secondary"
-            ></v-switch>
-          </v-list-item-action>
-          <v-list-item-title>Modo Escuro</v-list-item-title>
+      <v-list >
+        <v-list-item @click.stop > <!-- Manter .stop para o switch não fechar o menu -->
+            <v-list-item-action class="mr-4">
+              <v-switch
+                v-model="isDarkMode"
+                inset
+                color="secondary"
+              ></v-switch>
+            </v-list-item-action>
+            <v-list-item-title>Modo Escuro</v-list-item-title>
         </v-list-item>
+
+        <v-list-item @click="efetuarLogout"> <!-- Este clique deve funcionar -->
+            <v-list-item-icon>
+              <v-icon>mdi-logout-variant</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Sair</v-list-item-title>
+        </v-list-item>
+      </v-list>
     </v-menu>
     </v-app-bar>
     <v-sheet
@@ -87,6 +96,8 @@
 
 <script>
 
+import apiService from '@/services/apiService';
+
   export default {
     name: 'MenuSistema',
     data () {
@@ -130,6 +141,24 @@
             };
           });
         this.itemsMenu = rotasDoMenu;
+      },
+      async efetuarLogout() {
+        try {
+          // Se você tiver um endpoint de logout no backend, chame-o aqui.
+          // Exemplo: await apiService.logout(); 
+        } catch (error) {
+          console.error("Erro ao tentar deslogar do backend:", error);
+          // Mesmo com erro no backend, prosseguir com o logout no frontend
+        } finally {
+          localStorage.removeItem('user-token'); // Remove o token de autenticação
+          localStorage.removeItem('user-info');  // Remove informações do usuário, se houver
+          localStorage.removeItem('user-id');    // Remove o ID do usuário, se houver
+          apiService.setAuthHeader(null);       // Limpa o header de autorização no apiService
+          
+          this.$router.push('/login').catch(err => {
+            if (err.name !== 'NavigationDuplicated') throw err;
+          });
+        }
       }
     },
     watch: {
@@ -138,7 +167,7 @@
         this.$vuetify.theme.dark = newVal;
         // Salva a preferência no localStorage
         localStorage.setItem('darkMode', JSON.stringify(newVal));
-      }
+      },
     }
   }
 </script>

@@ -62,6 +62,14 @@ export default {
   created() {
     this.loadDashboardData();
   },
+  watch: {
+    // Observa a mudança no tema global do Vuetify
+    '$vuetify.theme.dark': {
+      handler() {
+        this.updateChartThemes(); // Chama o método para atualizar as opções dos gráficos
+    },
+  },
+  },
   methods: {
     async loadDashboardData() {
       this.isLoading = true;
@@ -76,9 +84,9 @@ export default {
         this.usuarios = usuariosRes;
         this.atendimentos = atendimentosRes;
 
-        this.processAtendimentosPorCliente();
-        this.processAtendimentosPorUsuario();
-        this.processAtendimentosPorPeriodo();
+        this.processAtendimentosPorCliente(this.$vuetify.theme.dark);
+        this.processAtendimentosPorUsuario(this.$vuetify.theme.dark);
+        this.processAtendimentosPorPeriodo(this.$vuetify.theme.dark);
 
       } catch (error) {
         console.error("Erro ao carregar dados do dashboard:", error);
@@ -87,12 +95,28 @@ export default {
         this.isLoading = false;
       }
     },
+ updateChartThemes() {
+      try {
+        // Re-processa os dados para gerar novas opções de gráfico com base no tema atual
+        this.processAtendimentosPorCliente(this.$vuetify.theme.dark);
+        this.processAtendimentosPorUsuario(this.$vuetify.theme.dark);
+        this.processAtendimentosPorPeriodo(this.$vuetify.theme.dark);
+      } catch (error) {
+        console.error("Erro ao carregar dados do dashboard:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
 
-    processAtendimentosPorCliente() {
+    processAtendimentosPorCliente(isDark) {
       const counts = this.atendimentos.reduce((acc, atendimento) => {
         acc[atendimento.clienteId] = (acc[atendimento.clienteId] || 0) + 1;
         return acc;
       }, {});
+
+       const textColor = isDark ? '#E0E0E0' : '#333333'; // Cor do texto para modo escuro/claro
+      const gridLineColor = isDark ? '#555555' : '#E6E6E6'; // Cor das linhas de grade
+      const backgroundColor = isDark ? '#1E1E1E' : '#FFFFFF'; // Cor de fundo do gráfico
 
       const categories = [];
       const data = [];
@@ -105,16 +129,24 @@ export default {
       });
 
       this.chartOptionsAtendimentosPorCliente = {
-        chart: { type: 'bar' },
+        chart: { type: 'bar',
+                backgroundColor: backgroundColor
+              },
         title: { text: null }, // Título já está no v-card-title
-        xAxis: { categories: categories, title: { text: 'Clientes' } },
-        yAxis: { min: 0, title: { text: 'Nº de Atendimentos' }, allowDecimals: false },
+       xAxis: { 
+            categories: categories, title: { text: 'Clientes', style: { color: textColor } },
+            labels: { style: { color: textColor } }, // Cor dos rótulos do eixo X
+        },
+        yAxis: { min: 0, title: { text: 'Nº de Atendimentos', style: { color: textColor } }, allowDecimals: false,
+            labels: { style: { color: textColor } }, // Cor dos rótulos do eixo Y
+            gridLineColor: gridLineColor // Cor das linhas de grade do eixo Y
+        },    
         series: [{ name: 'Atendimentos', data: data, colorByPoint: true }],
         legend: { enabled: false },
       };
     },
 
-    processAtendimentosPorUsuario() {
+    processAtendimentosPorUsuario(isDark) {
       const counts = this.atendimentos.reduce((acc, atendimento) => {
         acc[atendimento.usuarioId] = (acc[atendimento.usuarioId] || 0) + 1;
         return acc;
@@ -130,17 +162,30 @@ export default {
         }
       });
 
+      const textColor = isDark ? '#E0E0E0' : '#333333';
+      const gridLineColor = isDark ? '#555555' : '#E6E6E6';
+      const backgroundColor = isDark ? '#1E1E1E' : '#FFFFFF'
+
       this.chartOptionsAtendimentosPorUsuario = {
-        chart: { type: 'column' },
+         chart: { 
+            type: 'column',
+            backgroundColor: backgroundColor // Aplica cor de fundo
+        },
         title: { text: null },
-        xAxis: { categories: categories, title: { text: 'Usuários' } },
-        yAxis: { min: 0, title: { text: 'Nº de Atendimentos' }, allowDecimals: false },
+        xAxis: { 
+            categories: categories, title: { text: 'Usuários', style: { color: textColor } },
+            labels: { style: { color: textColor } }, // Cor dos rótulos do eixo X
+        },
+        yAxis: { min: 0, title: { text: 'Nº de Atendimentos', style: { color: textColor } }, allowDecimals: false,
+            labels: { style: { color: textColor } }, // Cor dos rótulos do eixo Y
+            gridLineColor: gridLineColor // Cor das linhas de grade do eixo Y
+        },
         series: [{ name: 'Atendimentos', data: data, colorByPoint: true }],
         legend: { enabled: false },
       };
     },
 
-    processAtendimentosPorPeriodo() {
+    processAtendimentosPorPeriodo(isDark) {
       const countsByMonth = this.atendimentos.reduce((acc, atendimento) => {
         const date = parseISO(atendimento.dataCadastro);
         if (isValid(date)) {
@@ -161,16 +206,31 @@ export default {
       const categories = sortedMonths;
       const data = sortedMonths.map(month => countsByMonth[month]);
 
+      const textColor = isDark ? '#E0E0E0' : '#333333';
+      const gridLineColor = isDark ? '#555555' : '#E6E6E6';
+      const backgroundColor = isDark ? '#1E1E1E' : '#FFFFFF';
+
       this.chartOptionsAtendimentosPorPeriodo = {
-        chart: { type: 'line' },
+        chart: { 
+            type: 'line',
+            backgroundColor: backgroundColor // Aplica cor de fundo
+        },
         title: { text: null },
-        xAxis: { categories: categories, title: { text: 'Mês/Ano' } },
-        yAxis: { min: 0, title: { text: 'Nº de Atendimentos' }, allowDecimals: false },
-        series: [{ name: 'Atendimentos', data: data }],
+        xAxis: { 
+            categories: categories, title: { text: 'Mês/Ano', style: { color: textColor } },
+            labels: { style: { color: textColor } }, // Cor dos rótulos do eixo X
+            gridLineColor: gridLineColor // Cor das linhas de grade do eixo X
+        },
+        yAxis: { min: 0, title: { text: 'Nº de Atendimentos', style: { color: textColor } }, allowDecimals: false,
+            labels: { style: { color: textColor } }, // Cor dos rótulos do eixo Y
+           gridLineColor: gridLineColor // Cor das linhas de grade do eixo Y
+        },
+        series: [{ name: 'Atendimentos', data: data}],
       };
     }
-  }
+  },
 };
+
 </script>
 
 <style scoped>

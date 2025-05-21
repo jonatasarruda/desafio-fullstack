@@ -19,7 +19,7 @@ const routes = [
         name: 'Dashboard',
         component: DashboardGeral,
         title: 'Dashboard',
-        meta: { requiredAuth: true,
+        meta: { requiresAuth: true,
                 showInMenu: true,
                 icon:"mdi-view-dashboard"
               }
@@ -29,7 +29,7 @@ const routes = [
         name: 'Clientes',
         component: ControleClientes,
         title: 'Clientes',
-        meta: { requiredAuth: true,
+        meta: { requiresAuth: true,
                 showInMenu: true,
                 icon: "mdi-account-box"
               }
@@ -40,7 +40,7 @@ const routes = [
         name: 'Atendimentos',
         component: ControleAtendimentos,
         title: 'Atendimentos',
-        meta: { requiredAuth: true,
+        meta: { requiresAuth: true,
                 showInMenu: true,
                 icon: "mdi-clipboard-text"
               }
@@ -50,7 +50,7 @@ const routes = [
         name: 'Usuarios',
         component: ControleUsuarios,
         title: 'Usuarios',
-        meta: { requiredAuth: true,
+        meta: { requiresAuth: true,
                 showInMenu: true,
                 icon: "mdi-human-greeting"
               }

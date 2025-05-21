@@ -21,9 +21,9 @@ return api.post('/usuarios/login', credentials); // Ajuste o endpoint '/auth/log
 }
 
 async function logout() {
-// Se sua API tiver um endpoint de logout para invalidar o token no servidor:
-// return apiClient.post('/auth/logout');
-return Promise.resolve(); // Se não houver endpoint de logout no backend
+
+return api.post('/usuarios/logout');
+
 }
 
 async function obterTodos(rota){
