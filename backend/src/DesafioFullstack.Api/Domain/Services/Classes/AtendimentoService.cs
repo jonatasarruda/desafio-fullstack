@@ -11,7 +11,7 @@ using DesafioFullstack.Api.Domain.Repositories.Classes;
 
 namespace DesafioFullstack.Api.Domain.Services.Classes
 {
-    public class AtendimentoService : IService<AtendimentoRequestContract, AtendimentoResponseContract, long>
+    public class AtendimentoService : IAtendimentoService
     {
         private readonly IAtendimentoRepository _atendimentoRepository;
         private readonly IMapper _mapper;
@@ -60,6 +60,24 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
         {
             var atendimento = await _atendimentoRepository.Obter(id);
             return _mapper.Map<AtendimentoResponseContract>(atendimento);
+        }
+
+        public async Task<IEnumerable<AtendimentoResponseContract?>> ObterPorCliente(long clienteId)
+        {
+            var atendimentos = await _atendimentoRepository.ObterPorCliente(clienteId);
+            return atendimentos.Select(atendimento => _mapper.Map<AtendimentoResponseContract>(atendimento));
+        }
+
+        public async Task<IEnumerable<AtendimentoResponseContract?>> ObterPorData(DateTime dataInicial, DateTime dataFinal)
+        {
+            var atendimentos = await _atendimentoRepository.ObterPorData(dataInicial, dataFinal);
+            return atendimentos.Select(atendimento => _mapper.Map<AtendimentoResponseContract>(atendimento));
+        }
+
+        public async Task<IEnumerable<AtendimentoResponseContract?>> ObterPorUsuario(long usuarioId)
+        {
+             var atendimentos = await _atendimentoRepository.ObterPorUsuario(usuarioId);
+            return atendimentos.Select(atendimento => _mapper.Map<AtendimentoResponseContract>(atendimento));
         }
     }
 }

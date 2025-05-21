@@ -28,7 +28,7 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
         {
             var cliente = _mapper.Map<Cliente>(entidade);
 
-            cliente.DataCadastro = DateTime.Now;
+            cliente.DataCadastro = DateTime.Today;
 
             cliente = await _clienteRepository.Adicionar(cliente);
 

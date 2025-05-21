@@ -69,12 +69,20 @@ namespace DesafioFullstack.Api.Domain.Repositories.Classes
                                                 .Include(u => u.Pareceres)
                                                 .ToListAsync();
         }
+        
+         public async Task<IEnumerable<Atendimento>> ObterPorUsuario(long usuarioId)
+        {
+            return await _contexto.Atendimentos.Where(x => x.UsuarioId == usuarioId)
+                                                .OrderBy(x => x.UsuarioId == usuarioId)
+                                                .Include(u => u.Pareceres)
+                                                .ToListAsync();
+        }
 
         public async Task<Atendimento?> Obter(long id)
         {
-             return await _contexto.Atendimentos.Where(x => x.Id == id)
-                                                    .Include(u => u.Pareceres)
-                                                    .FirstOrDefaultAsync();
+            return await _contexto.Atendimentos.Where(x => x.Id == id)
+                                                   .Include(u => u.Pareceres)
+                                                   .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<Atendimento>> ObterPorData(DateTime dataInicial, DateTime dataFinal)

@@ -54,7 +54,7 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     .AddScoped<IClienteRepository, ClienteRepository>()
     .AddScoped<IClienteService, ClienteService>()
     .AddScoped<IAtendimentoRepository, AtendimentoRepository>()
-    .AddScoped<IService<AtendimentoRequestContract, AtendimentoResponseContract, long>, AtendimentoService>()
+    .AddScoped<IAtendimentoService, AtendimentoService>()
     .AddScoped<IParecerRepository, ParecerRepository>()
     .AddScoped<IService<ParecerRequestContract, ParecerResponseContract, long>, ParecerService>()
     

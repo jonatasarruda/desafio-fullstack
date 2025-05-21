@@ -8,15 +8,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DesafioFullstack.Api.Controllers
-{   
+{
     [ApiController]
     [Route("atendimentos")]
     public class AtendimentoController : BaseController
     {
-        private readonly IService<AtendimentoRequestContract, AtendimentoResponseContract, long> _atendimentoService;
+        private readonly IAtendimentoService _atendimentoService;
 
         public AtendimentoController(
-            IService<AtendimentoRequestContract, AtendimentoResponseContract, long> atendimentoService)
+            IAtendimentoService atendimentoService)
         {
             _atendimentoService = atendimentoService;
         }
@@ -76,6 +76,57 @@ namespace DesafioFullstack.Api.Controllers
             {
                 _idUsuario = ObterIdUsuarioLogado();
                 return Ok(await _atendimentoService.Atualizar(id, contrato, _idUsuario));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("cliente/{idCliente}")]
+        [AllowAnonymous]
+
+        public async Task<IActionResult> ObterPorCliente(long idCliente)
+        {
+            try
+            {
+                _idUsuario = ObterIdUsuarioLogado();
+                return Ok(await _atendimentoService.ObterPorCliente(idCliente));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("usuario/{idUsuario}")]
+        [AllowAnonymous]
+
+        public async Task<IActionResult> ObterPorUsuario(long idUsuario)
+        {
+            try
+            {
+                _idUsuario = ObterIdUsuarioLogado();
+                return Ok(await _atendimentoService.ObterPorUsuario(idUsuario));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+        
+        [HttpGet]
+        [Route("{dataInicial}&&{dataFinal}")]
+        [AllowAnonymous]
+
+        public async Task<IActionResult> ObterPorData(DateTime dataInicial, DateTime dataFinal)
+        {
+            try
+            {
+                _idUsuario = ObterIdUsuarioLogado();
+                return Ok(await _atendimentoService.ObterPorData(dataInicial, dataFinal));
             }
             catch (Exception ex)
             {

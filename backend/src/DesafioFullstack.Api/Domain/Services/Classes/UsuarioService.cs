@@ -53,7 +53,7 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
             var usuario = _mapper.Map<Usuario>(entidade);
 
             usuario.Senha = GerarHashSenha(usuario.Senha);
-            usuario.DataCadastro = DateTime.Now;
+            usuario.DataCadastro = DateTime.Today;
 
             usuario = await _usuarioRepository.Adicionar(usuario);
 
@@ -66,20 +66,12 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
 
             var usuario = _mapper.Map<Usuario>(entidade);
             usuario.Id = id;
+            usuario.DataCadastro = usuario.DataCadastro;
             usuario.Senha = GerarHashSenha(entidade.Senha);
 
             usuario = await _usuarioRepository.Atualizar(usuario);
 
             return _mapper.Map<UsuarioResponseContract>(usuario);
-        }
-
-        public async Task Inativar(long id, long idUsuario)
-        {
-            // var usuario = await _usuarioRepository.Obter(id) ?? throw new NotImplementedException();
-            
-            // await _usuarioRepository.Deletar(_mapper.Map<Usuario>(usuario));
-
-            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<UsuarioResponseContract>> Obter(long idUsuario)
@@ -113,6 +105,11 @@ namespace DesafioFullstack.Api.Domain.Services.Classes
             }
             
             return hashSenha;
+        }
+
+        public Task Inativar(long id, long idUsuario)
+        {
+            throw new NotImplementedException();
         }
     }
 }
