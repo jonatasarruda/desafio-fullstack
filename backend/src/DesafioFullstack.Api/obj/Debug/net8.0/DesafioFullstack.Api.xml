@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DesafioFullstack.Api</name>
+    </assembly>
+    <members>
+        <member name="T:DesafioFullstack.Api.Controllers.UsuarioController">
+            <summary>
+            Controlador para gerenciar operações relacionadas a usuários.
+            </summary>
+        </member>
+        <member name="M:DesafioFullstack.Api.Controllers.UsuarioController.#ctor(DesafioFullstack.Api.Domain.Services.Interfaces.IUsuarioService)">
+            <summary>
+            Construtor do UsuarioController.
+            </summary>
+            <param name="usuarioService">Serviço de usuário injetado.</param>
+        </member>
+        <member name="M:DesafioFullstack.Api.Controllers.UsuarioController.Autenticar(DesafioFullstack.Api.Contract.Usuario.UsuarioLoginRequestContract)">
+            <summary>
+            Autentica um usuário e retorna um token de acesso.
+            </summary>
+            <param name="contrato">Dados de login do usuário.</param>
+            <returns>Token de acesso se a autenticação for bem-sucedida.</returns>
+            <response code="200">Retorna o token de acesso.</response>
+            <response code="401">Credenciais inválidas.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:DesafioFullstack.Api.Controllers.UsuarioController.Logout">
+            <summary>
+            Realiza o logout do usuário (simulado).
+            </summary>
+            <returns>Mensagem de sucesso do logout.</returns>
+            <response code="200">Logout solicitado com sucesso.</response>
+        </member>
+        <member name="M:DesafioFullstack.Api.Controllers.UsuarioController.Adicionar(DesafioFullstack.Api.Contract.Usuario.UsuarioRequestContract)">
+            <summary>
+            Adiciona um novo usuário.
+            </summary>
+            <param name="contrato">Dados do novo usuário.</param>
+            <returns>O usuário recém-criado.</returns>
+            <response code="201">Retorna o usuário recém-criado.</response>
+            <response code="400">Se os dados do usuário forem inválidos.</response>
+            <response code="401">Se o usuário não estiver autenticado.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:DesafioFullstack.Api.Controllers.UsuarioController.Obter">
+            <summary>
+            Obtém todos os usuários.
+            </summary>
+            <returns>Lista de todos os usuários.</returns>
+            <response code="200">Retorna a lista de usuários.</response>
+            <response code="401">Se o usuário não estiver autenticado.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:DesafioFullstack.Api.Controllers.UsuarioController.Obter(System.Int64)">
+            <summary>
+            Obtém um usuário específico pelo ID.
+            </summary>
+            <param name="id">ID do usuário.</param>
+            <returns>O usuário correspondente ao ID.</returns>
+            <response code="200">Retorna o usuário.</response>
+            <response code="401">Se o usuário não estiver autenticado.</response>
+            <response code="404">Se o usuário não for encontrado.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="M:DesafioFullstack.Api.Controllers.UsuarioController.Atualizar(System.Int64,DesafioFullstack.Api.Contract.Usuario.UsuarioRequestContract)">
+            <summary>
+            Atualiza um usuário existente.
+            </summary>
+            <param name="Id">ID do usuário a ser atualizado.</param>
+            <param name="contrato">Novos dados do usuário.</param>
+            <returns>O usuário atualizado.</returns>
+            <response code="200">Retorna o usuário atualizado.</response>
+            <response code="400">Se os dados do usuário forem inválidos.</response>
+            <response code="401">Se o usuário não estiver autenticado.</response>
+            <response code="404">Se o usuário não for encontrado.</response>
+            <response code="500">Erro interno do servidor.</response>
+        </member>
+        <member name="T:DesafioFullstack.Api.Domain.Services.Interfaces.IService`3">
+            <summary>
+            Interface generica para criação de serviços.
+            </summary>
+            <typeparam name="RQ">Contrato de request</typeparam>
+            <typeparam name="RS">Contrato de response</typeparam>
+            <typeparam name="I">Tipo de identificador</typeparam>
+        </member>
+        <member name="T:DesafioFullstack.Api.Migrations.CriarEntidades">
+            <inheritdoc />
+        </member>
+        <member name="M:DesafioFullstack.Api.Migrations.CriarEntidades.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:DesafioFullstack.Api.Migrations.CriarEntidades.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:DesafioFullstack.Api.Migrations.CriarEntidades.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:DesafioFullstack.Api.Migrations.NovasEntidades">
+            <inheritdoc />
+        </member>
+        <member name="M:DesafioFullstack.Api.Migrations.NovasEntidades.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:DesafioFullstack.Api.Migrations.NovasEntidades.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:DesafioFullstack.Api.Migrations.NovasEntidades.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

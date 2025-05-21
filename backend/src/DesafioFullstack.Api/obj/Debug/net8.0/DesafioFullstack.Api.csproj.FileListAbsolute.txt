@@ -123,3 +123,5 @@ C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\Desafio
 C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.pdb
 C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.genruntimeconfig.cache
 C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\ref\DesafioFullstack.Api.dll
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\bin\Debug\net8.0\DesafioFullstack.Api.xml
+C:\Users\jonat\Documents\desafio-alterdata\desafio-alterdata\backend\src\DesafioFullstack.Api\obj\Debug\net8.0\DesafioFullstack.Api.xml

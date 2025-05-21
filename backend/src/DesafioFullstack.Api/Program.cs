@@ -19,12 +19,18 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigurarServices(builder);
 
 ConfigurarInjecaoDeDependencia(builder);
+builder.Services.AddScoped<DataSeeder>(); // Adiciona o DataSeeder
 
 var app = builder.Build();
+
+// Aplica migrações e executa o seed dos dados
+await EnsureDatabaseCreatedAndSeeded(app);
 
 ConfigurarAplicacao(app);
 
 app.Run();
+
+#region Métodos de Configuração
 
 // Metodo que configrua as injeções de dependencia do projeto.
 static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
@@ -32,7 +38,7 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     string? connectionString = builder.Configuration.GetConnectionString("PADRAO");
 
     builder.Services.AddDbContext<ApplicationContext>(options =>
-        options.UseNpgsql(connectionString), ServiceLifetime.Transient, ServiceLifetime.Transient);
+        options.UseNpgsql(connectionString), ServiceLifetime.Scoped); // Alterado para Scoped, que é mais comum para DbContext
 
     var config = new MapperConfiguration(cfg =>
     {
@@ -75,6 +81,9 @@ static void ConfigurarServices(WebApplicationBuilder builder)
 
     builder.Services.AddSwaggerGen(c =>
     {
+
+
+
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             Description = "JTW Authorization header using the Beaerer scheme (Example: 'Bearer 12345abcdef')",
@@ -100,6 +109,14 @@ static void ConfigurarServices(WebApplicationBuilder builder)
         });
 
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "DesafioFullstack.Api", Version = "v1" });   
+        
+        // Configurar o Swagger para usar o arquivo XML gerado
+        var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        if (File.Exists(xmlPath)) // Adicionar uma verificação se o arquivo existe é uma boa prática
+        {
+            c.IncludeXmlComments(xmlPath);
+        }
     });
 
     builder.Services.AddAuthentication(x =>
@@ -149,3 +166,33 @@ static void ConfigurarAplicacao(WebApplication app)
 
     app.MapControllers();
 }
+
+static async Task EnsureDatabaseCreatedAndSeeded(WebApplication app)
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<ApplicationContext>();
+            
+            // Aplica quaisquer migrações pendentes.
+            // É uma boa prática garantir que o schema do banco esteja atualizado antes do seed.
+            await context.Database.MigrateAsync();
+
+            // Executa o seed apenas em ambiente de desenvolvimento ou conforme necessidade
+            if (app.Environment.IsDevelopment()) // Ou outra lógica de sua preferência
+            {
+                var seeder = services.GetRequiredService<DataSeeder>();
+                await seeder.SeedAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "Um erro ocorreu ao aplicar migrações ou ao popular o banco de dados (seed).");
+            // Considere o que fazer em caso de erro: parar a aplicação, logar e continuar, etc.
+        }
+    }
+}
+#endregion
