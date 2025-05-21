@@ -9,18 +9,35 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DesafioFullstack.Api.Controllers
 {
+    
+    /// <summary>
+    /// Controlador para gerenciar operações relacionadas a atendimentos.
+    /// </summary>
     [ApiController]
     [Route("atendimentos")]
     public class AtendimentoController : BaseController
     {
         private readonly IAtendimentoService _atendimentoService;
 
+        /// <summary>
+        /// Construtor do UsuarioController.
+        /// </summary>
+        /// <param name="atendimentoService">Serviço de usuário injetado.</param>
         public AtendimentoController(
             IAtendimentoService atendimentoService)
         {
             _atendimentoService = atendimentoService;
         }
 
+        /// <summary>
+        /// Adiciona um novo usuário.
+        /// </summary>
+        /// <param name="contrato">Dados do novo atendimento.</param>
+        /// <returns>O atendimento recém-criado.</returns>
+        /// <response code="201">Retorna o atendimento recém-criado.</response>
+        /// <response code="400">Se os dados do atendimento forem inválidos.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Adicionar(AtendimentoRequestContract contrato)
@@ -35,6 +52,13 @@ namespace DesafioFullstack.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtém todos os atendimentos.
+        /// </summary>
+        /// <returns>Lista de todos os atendimentos.</returns>
+        /// <response code="200">Retorna a lista de atendimentos.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Obter()
@@ -50,6 +74,15 @@ namespace DesafioFullstack.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtém um atendimento específico pelo ID.
+        /// </summary>
+        /// <param name="id">ID do atendimento.</param>
+        /// <returns>O atendimento correspondente ao ID.</returns>
+        /// <response code="200">Retorna o atendimento.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="404">Se o atendimento não for encontrado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpGet]
         [Route("{id}")]
         [AllowAnonymous]
@@ -66,6 +99,17 @@ namespace DesafioFullstack.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Atualiza um atendimento existente.
+        /// </summary>
+        /// <param name="id">ID do atendimento a ser atualizado.</param>
+        /// <param name="contrato">Novos dados do atendimento.</param>
+        /// <returns>O atendimento atualizado.</returns>
+        /// <response code="200">Retorna o atendimento atualizado.</response>
+        /// <response code="400">Se os dados do atendimento forem inválidos.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="404">Se o atendimento não for encontrado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpPut]
         [Route("{id}")]
         [AllowAnonymous]
@@ -82,7 +126,15 @@ namespace DesafioFullstack.Api.Controllers
                 return Problem(ex.Message);
             }
         }
-
+        /// <summary>
+        /// Obtém todos os atendimento específico pelo ID do cliente.
+        /// </summary>
+        /// <param name="idCliente">Id do cliente.</param>
+        /// <returns>Lista de atendimentos do cliente.</returns>
+        /// <response code="200">Retorna lista de atendimentos.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="404">Se o cliente não for encontrado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpGet]
         [Route("cliente/{idCliente}")]
         [AllowAnonymous]
@@ -99,7 +151,15 @@ namespace DesafioFullstack.Api.Controllers
                 return Problem(ex.Message);
             }
         }
-
+        /// <summary>
+        /// Obtém todos os atendimento específico pelo ID do usuário.
+        /// </summary>
+        /// <param name="idUsuario">Id do usuário.</param>
+        /// <returns>Lista de atendimentos do cliente.</returns>
+        /// <response code="200">Retorna lista de atendimentos.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="404">Se o usuário não for encontrado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpGet]
         [Route("usuario/{idUsuario}")]
         [AllowAnonymous]
@@ -116,7 +176,15 @@ namespace DesafioFullstack.Api.Controllers
                 return Problem(ex.Message);
             }
         }
-        
+        /// <summary>
+        /// Obtém todos os atendimento baseado na data de cadastro.
+        /// </summary>
+        /// <param name="dataInicial">Data inicial.</param>
+        /// <param name="dataFinal">Data final.</param>
+        /// <returns>Lista de atendimentos do que estão com data de cadastro entre as datas passadas.</returns>
+        /// <response code="200">Retorna lista de atendimentos.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpGet]
         [Route("{dataInicial}&&{dataFinal}")]
         [AllowAnonymous]
