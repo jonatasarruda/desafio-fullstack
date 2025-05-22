@@ -14,7 +14,7 @@
     >
       <template v-slot:activator="{ attrs, on }">
         <v-btn
-          class="ma-5"
+          class="ma-5 user-menu-button"
           v-bind="attrs"
           v-on="on"
         >
@@ -22,7 +22,7 @@
         </v-btn>
       </template>
       <v-list >
-        <v-list-item @click.stop > <!-- Manter .stop para o switch não fechar o menu -->
+        <v-list-item @click.stop > 
             <v-list-item-action class="mr-4">
               <v-switch
                 v-model="isDarkMode"
@@ -33,7 +33,7 @@
             <v-list-item-title>Modo Escuro</v-list-item-title>
         </v-list-item>
 
-        <v-list-item @click="efetuarLogout"> <!-- Este clique deve funcionar -->
+        <v-list-item @click="efetuarLogout"> 
             <v-list-item-icon>
               <v-icon>mdi-logout-variant</v-icon>
             </v-list-item-icon>
@@ -112,7 +112,16 @@ import apiService from '@/services/apiService';
         itemsMenu: [],
         mini: true,
         usuario: {
-          nome: "Jonatas Arruda",
+          nome: (() => {
+            let userName = localStorage.getItem('user-info');
+            if (userName) {
+              userName = userName.replace(/^"|"$/g, '');
+              if (userName.includes('@')) {
+                return userName.split('@')[0];
+              }
+            return userName || 'Usuário';
+        }
+        })(),
         },
         isDarkMode: false,
       }
@@ -126,7 +135,6 @@ import apiService from '@/services/apiService';
       } else {
         this.isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       }
-      // Aplica o tema inicial
       this.$vuetify.theme.dark = this.isDarkMode;
     },
     methods: {
@@ -144,16 +152,14 @@ import apiService from '@/services/apiService';
       },
       async efetuarLogout() {
         try {
-          // Se você tiver um endpoint de logout no backend, chame-o aqui.
-          // Exemplo: await apiService.logout(); 
+          await apiService.logout(); 
         } catch (error) {
           console.error("Erro ao tentar deslogar do backend:", error);
-          // Mesmo com erro no backend, prosseguir com o logout no frontend
         } finally {
-          localStorage.removeItem('user-token'); // Remove o token de autenticação
-          localStorage.removeItem('user-info');  // Remove informações do usuário, se houver
-          localStorage.removeItem('user-id');    // Remove o ID do usuário, se houver
-          apiService.setAuthHeader(null);       // Limpa o header de autorização no apiService
+          localStorage.removeItem('user-token'); 
+          localStorage.removeItem('user-info');  
+          localStorage.removeItem('user-id');    
+          apiService.setAuthHeader(null);       
           
           this.$store.dispatch('snackbar/showSnackbar', {
             message: 'Logout realizado com sucesso!',
@@ -176,7 +182,7 @@ import apiService from '@/services/apiService';
   }
 </script>
 
-<style scoped>
+<style>
 v-btn {
   background-color: black;
   color: black;
@@ -185,7 +191,13 @@ v-card {
   border-radius: 0px;
 }
 .v-list-item--active{
-  color: white;
+  color: white !important;
 }
-
+.v-navigation-drawer__border{
+   background-color: transparent !important;
+}
+.user-menu-button {
+  min-width: 150px !important;
+  justify-content: space-between; 
+}
 </style>

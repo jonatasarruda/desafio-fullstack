@@ -21,7 +21,7 @@
                 :sm="field.sm"
                 :md="field.md"
               >
-                <!-- Campo de Texto -->
+
                 <v-text-field
                   v-if="['text', 'password', 'email', 'number'].includes(field.type)"
                   v-model="localItem[field.model]"
@@ -34,7 +34,7 @@
                   :prepend-icon="field.prependIcon"
                 ></v-text-field>
 
-                <!-- Campo de Seleção (Select) -->
+
                 <v-select
                   v-if="field.type === 'select'"
                   v-model="localItem[field.model]"

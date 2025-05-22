@@ -80,7 +80,6 @@ export default {
           senha: this.senha,
         });
 
-        // Ajuste conforme a estrutura da sua resposta da API
         const token = response.data.token; 
         const user = response.data.email; 
         const id = response.data.id;
@@ -89,8 +88,8 @@ export default {
         if (token && user) {
           localStorage.setItem('user-token', token);
           localStorage.setItem('user-info', JSON.stringify(user));
-          localStorage.setItem('user-id', id) // Armazena info do usuário
-          apiService.setAuthHeader(token); // Configura o apiService para usar o token
+          localStorage.setItem('user-id', id) 
+          apiService.setAuthHeader(token); 
           
           const redirectPath = this.$route.query.redirect || '/';
           this.$router.push(redirectPath);
@@ -102,7 +101,7 @@ export default {
         if (error.response && error.response.status === 401) {
           this.loginError = 'E-mail ou senha inválidos.';
         } else if (error.response && error.response.data && error.response.data.message) {
-          this.loginError = error.response.data.message; // Se sua API envia uma mensagem de erro específica
+          this.loginError = error.response.data.message; 
         } else {
           this.loginError = 'Erro ao tentar fazer login. Verifique sua conexão e tente novamente.';
           console.error('Login error:', error);

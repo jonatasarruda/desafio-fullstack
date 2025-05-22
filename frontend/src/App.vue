@@ -27,15 +27,15 @@ export default {
   methods: {
     verificarStatusLogin() {
       const token = localStorage.getItem('user-token');
-      this.usuarioLogado = !!token; // Define true se token existir, false caso contrário
+      this.usuarioLogado = !!token;
     }
   },
   created() {
-    this.verificarStatusLogin(); // Verifica ao criar o componente
+    this.verificarStatusLogin(); 
   },
   watch: {
     '$route'() {
-      // Verifica o status do login toda vez que a rota muda
+
       this.verificarStatusLogin();
     }
   }

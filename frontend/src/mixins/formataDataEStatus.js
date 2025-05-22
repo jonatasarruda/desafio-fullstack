@@ -10,12 +10,11 @@ export default {
       if (dataCadastro) {
         const parsedDate = parseISO(dataCadastro);
         if (isValid(parsedDate)) {
-          return format(parsedDate, 'dd/MM/yyyy'); // Formato de exibição
+          return format(parsedDate, 'dd/MM/yyyy'); 
         }
       }
       return 'Data inválida';
     },
-    // Método para processar um único item
     processSingleItem(item) {
       const ativoBooleano = typeof item.ativo === 'string' 
         ? item.ativo.toLowerCase() === 'true' 
@@ -27,7 +26,6 @@ export default {
         ativo: ativoBooleano,
       };
     },
-    // Método para processar múltiplos itens (usado no created)
     processItems(items) {
       return items.map(item => this.processSingleItem(item));
     }

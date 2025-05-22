@@ -7,7 +7,7 @@
           <v-window-item :value="0" class="fill-height pa-0">
             <v-card class="fill-height d-flex flex-column" style="overflow-y: auto;">
               <v-card-title>
-                Lista de Atendimentos
+                <h2>Lista de Atendimentos</h2>
                 <v-spacer></v-spacer>
               </v-card-title>              
               <TableGenerica
@@ -16,94 +16,89 @@
                 :loading="isLoadingTable"
                 :search="searchTerm"
                 item-key="id"
-                table-class="elevation-1"
+                table-class="elevation-1 custom-row-height-table"
                 :has-actions-slot="true"
                 @click:row="cliqueLinha"
                 class="flex-grow-1"
               >
                 <template v-slot:top>
-                  <v-expansion-panels flat class="mb-0 pb-0">
-                    <v-expansion-panel>
-                      <v-expansion-panel-header class="pa-3">
-                        <div class="d-flex align-center" style="width: 100%;">
-                          <v-text-field
-                            v-model="searchTerm"
-                            label="Buscar por ID ou Descrição..."
-                            class="mx-2 flex-grow-1"
-                            prepend-inner-icon="mdi-magnify"
-                            clearable
-                            dense
-                            hide-details
-                            @click.native.stop
-                          ></v-text-field>
-                          <v-btn
-                            v-if="!$vuetify.breakpoint.smAndDown"
-                            @click.native.stop="inicarNovoAtendimento()"
-                            color="primary"
-                            class="mx-2"
-                            elevation="2"
-                          >
-                            Novo Atendimento
-                          </v-btn>
+                  <div class="px-4 py-3"> 
+                    <v-row dense align="center" class="mb-2">
+                      <v-col> 
+                        <v-text-field
+                          v-model="searchTerm"
+                          label="Buscar por ID ou Descrição..."
+                          prepend-inner-icon="mdi-magnify"
+                          clearable
+                          dense
+                          hide-details
+                          @click.native.stop
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="auto" v-if="!$vuetify.breakpoint.smAndDown">
+                        <v-btn
+                          @click.native.stop="inicarNovoAtendimento()"
+                          color="primary"
+                          elevation="2"
+                        >
+                          Novo Atendimento
+                        </v-btn>
+                      </v-col>
+                    </v-row>
 
-                        </div>
-                      </v-expansion-panel-header>
-                      <v-expansion-panel-content class="pt-0">
-                        <v-row class="pa-2 align-center" dense>
-                          <v-col cols="12" md="3">
-                            <v-text-field 
-                            v-model="filtros.dataInicio" 
-                            label="Data Início" 
-                            type="date" 
-                            dense 
-                            outlined 
-                            hide-details 
-                            clearable></v-text-field>
-                          </v-col>
-                          <v-col cols="12" md="3">
-                            <v-text-field 
-                            v-model="filtros.dataFim" 
-                            label="Data Fim" 
-                            type="date" 
-                            dense 
-                            outlined 
-                            hide-details 
-                            clearable 
-                            :min="filtros.dataInicio"></v-text-field>
-                          </v-col>
-                          <v-col cols="12" md="3">
-                            <v-select 
-                            v-model="filtros.clienteId" 
-                            :items="clientesList" 
-                            item-text="nome" 
-                            item-value="id" 
-                            label="Cliente" 
-                            dense 
-                            outlined 
-                            hide-details 
-                            clearable></v-select>
-                          </v-col>
-                          <v-col cols="12" md="3">
-                            <v-select 
-                            v-model="filtros.usuarioId" 
-                            :items="usuariosList" 
-                            item-text="email" 
-                            item-value="id" 
-                            label="Usuário" 
-                            dense 
-                            outlined 
-                            hide-details 
-                            clearable></v-select>
-                          </v-col>
-                        </v-row>
-                        <v-row class="pa-2 pb-3" dense>
-                            <v-col class="d-flex justify-end">
-                                <v-btn text small color="secondary" @click="limparFiltros" class="mr-2">Limpar Filtros</v-btn>
-                            </v-col>
-                        </v-row>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-                  </v-expansion-panels>
+                    <v-row dense align="center">
+                      <v-col cols="12" md="3">
+                        <v-text-field
+                        v-model="filtros.dataInicio"
+                        label="Data Início"
+                        type="date"
+                        dense
+                        outlined
+                        hide-details
+                        clearable></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="3">
+                        <v-text-field
+                        v-model="filtros.dataFim"
+                        label="Data Fim"
+                        type="date"
+                        dense
+                        outlined
+                        hide-details
+                        clearable
+                        :min="filtros.dataInicio"></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="3">
+                        <v-select
+                        v-model="filtros.clienteId"
+                        :items="clientesList"
+                        item-text="nome"
+                        item-value="id"
+                        label="Cliente"
+                        dense
+                        outlined
+                        hide-details
+                        clearable></v-select>
+                      </v-col>
+                      <v-col cols="12" md="3">
+                      <v-select
+                        v-model="filtros.usuarioId"
+                        :items="usuariosList"
+                        item-text="email"
+                        item-value="id"
+                        label="Usuário"
+                        dense
+                        outlined
+                        hide-details
+                        clearable></v-select>
+                      </v-col>
+                    </v-row>
+                    <v-row dense class="mt-1">
+                        <v-col class="d-flex justify-end">
+                            <v-btn text small color="secondary" @click="limparFiltros">Limpar Filtros</v-btn>
+                        </v-col>
+                    </v-row>
+                  </div>
                 </template>
 
                 <template v-slot:item.status="{ item }">
@@ -115,16 +110,16 @@
                 <template v-slot:actions="{ item }">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn icon small v-bind="attrs" v-on="on" @click.stop="navegarParaDetalhes(item, 'view')">
-                        <v-icon small color="info">mdi-eye</v-icon>
+                      <v-btn icon v-bind="attrs" v-on="on" @click.stop="navegarParaDetalhes(item, 'view')" dark>
+                        <v-icon color="info">mdi-eye</v-icon>
                       </v-btn>
                     </template>
                     <span>Visualizar Detalhes</span>
                   </v-tooltip>
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn icon small v-bind="attrs" v-on="on" @click.stop="navegarParaDetalhes(item, 'edit')" :disabled="item.status === 'cancelado' || item.status === 'concluido'">
-                        <v-icon small color="primary">mdi-pencil</v-icon>
+                      <v-btn icon v-bind="attrs" v-on="on" @click.stop="navegarParaDetalhes(item, 'edit')" :disabled="item.status === 'cancelado' || item.status === 'concluido'">
+                        <v-icon color="secondary">mdi-pencil</v-icon>
                       </v-btn>
                     </template>
                     <span>Editar Atendimento</span>
@@ -137,8 +132,7 @@
                   </v-alert>
                 </template>
               </TableGenerica>
-
-              <!-- Botão FAB para telas menores (sm e abaixo) -->
+              
               <v-tooltip left>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
@@ -172,13 +166,26 @@
                 </v-btn>
                 {{ tituloFormView }}
                 <v-spacer></v-spacer>
-                <v-btn v-if="visualizacaoDetalhes === 'view'" color="primary" @click="edicaoAtendimento" class="mr-2" :disabled="atendimentoAtual && atendimentoAtual.status === 'cancelado' || atendimentoAtual && atendimentoAtual.status === 'concluido'">
+                <v-btn 
+                v-if="visualizacaoDetalhes === 'view'" 
+                  color="primary" 
+                  @click="edicaoAtendimento" 
+                  class="mr-2" 
+                  :disabled="atendimentoAtual && atendimentoAtual.status === 'cancelado' || atendimentoAtual && atendimentoAtual.status === 'concluido'">
                   <v-icon left>mdi-pencil</v-icon>Editar
                 </v-btn>
-                <v-btn v-if="visualizacaoDetalhes === 'edit' || visualizacaoDetalhes === 'create'" outlined color="error" @click="cancelarEdicaoAtendimento" class="mr-2">
+                <v-btn 
+                v-if="visualizacaoDetalhes === 'edit' || visualizacaoDetalhes === 'create'" 
+                  outlined 
+                  color="error" 
+                  @click="cancelarEdicaoAtendimento" 
+                  class="mr-2">
                   Cancelar
                 </v-btn>
-                <v-btn v-if="visualizacaoDetalhes === 'edit' || visualizacaoDetalhes === 'create'" color="primary" @click="salvarAtendimento" :loading="isSaving">
+                <v-btn v-if="visualizacaoDetalhes === 'edit' || visualizacaoDetalhes === 'create'" 
+                  color="primary" 
+                  @click="salvarAtendimento" 
+                  :loading="isSaving">
                   <v-icon left>mdi-content-save</v-icon>Salvar
                 </v-btn>
               </v-card-title>
@@ -252,6 +259,8 @@
                     </v-form>
                   </v-col>
 
+                  <v-divider vertical v-if="$vuetify.breakpoint.mdAndUp" class="visible-divider"></v-divider>
+
 
                   <v-col md="5" cols="12">
                     <h3 class="mb-3">Pareceres do Atendimento</h3>
@@ -289,7 +298,7 @@
                               :rules="[v => !!(v && v.trim()) || 'O texto do parecer não pode ser vazio']"
                             ></v-textarea>
                             <div class="d-flex align-center">
-                              <v-btn small color="primary" @click="saveEditedParecer" :loading="isSavingParecer" :disabled="!editedParecerText || !editedParecerText.trim()">Salvar</v-btn>
+                              <v-btn small color="primary" @click="salvarParecerEditado" :loading="salvandoParecer" :disabled="!editedParecerText || !editedParecerText.trim()">Salvar</v-btn>
                               <v-btn small text @click="cancelaEdicaoParecer" class="ml-2">Cancelar</v-btn>
                             </div>
                             <v-list-item-subtitle class="mt-2">
@@ -317,7 +326,7 @@
                         small
                         @click="adicionarNovoParecer"
                         :disabled="!novoParecerTexto.trim()"
-                        :loading="isAddingParecer"
+                        :loading="adicionandoParecer"
                       >Adicionar Parecer</v-btn>
                     </div>
                   </v-col>
@@ -383,10 +392,10 @@ export default {
       pareceres: [],
       isLoadingPareceres: false,
       novoParecerTexto: '',
-      isAddingParecer: false,
+      adicionandoParecer: false,
       editingParecerId: null,
       editedParecerText: '',
-      isSavingParecer: false,
+      salvandoParecer: false,
       filtros: {
         dataInicio: null,
         dataFim: null,
@@ -459,7 +468,7 @@ export default {
     },
     async cargaIncial() {
       this.isLoadingTable = true;
-      this.isLoadingOverall = true;
+      // this.isLoadingOverall = true;
       try {
         const [atendimentosApi, clientesApi, usuariosApi] = await Promise.all([
           apiService.obterTodos('/atendimentos'), 
@@ -492,10 +501,6 @@ export default {
       } finally {
         this.isLoadingTable = false;
         this.isLoadingOverall = false;
-        this.$store.dispatch('snackbar/showSnackbar', {
-          message: 'Dados carregados!',
-          color: 'info',
-        });
       }
     },
 
@@ -507,13 +512,13 @@ export default {
       this.pareceres = [];
       this.editingParecerId = null;
       this.editedParecerText = '';
-      this.isSavingParecer = false;
+      this.salvandoParecer = false;
       this.novoParecerTexto = '';
       this.$refs.detailFormRef?.resetValidation();
     },
 
     async navegarParaDetalhes(atendimento, mode = 'view') {
-      this.isLoadingOverall = true;
+      // this.isLoadingOverall = true;
       let atendimentoData = { 
         ...atendimento, 
         descricao: atendimento.textoAberturaAtendimento || '' 
@@ -614,6 +619,7 @@ export default {
           atendimentoSalvo = await apiService.cadastrarNovo('/atendimentos', payload);
 
           let dataFormatadaInputSalvo = null;
+
           if(atendimentoSalvo.dataCadastro && typeof atendimentoSalvo.dataCadastro === 'string') { 
             const parsed = parseISO(atendimentoSalvo.dataCadastro); 
             if(isValid(parsed)) dataFormatadaInputSalvo = format(parsed, 'yyyy-MM-dd');
@@ -628,26 +634,33 @@ export default {
           this.atendimentoAtual = { ...newItem, descricao: newItem.textoAberturaAtendimento || '' };
           this.originalatendimentoAtual = JSON.parse(JSON.stringify(this.atendimentoAtual));
           this.visualizacaoDetalhes = 'view';
+
         } else if (this.visualizacaoDetalhes === 'edit' && this.atendimentoAtual.id) {
           atendimentoSalvo = await apiService.atualizar('/atendimentos', this.atendimentoAtual.id, payload);
  
           let dataFormatadaInputSalvo = null;
+
           if(atendimentoSalvo.dataCadastro && typeof atendimentoSalvo.dataCadastro === 'string') { 
+           
             const parsed = parseISO(atendimentoSalvo.dataCadastro); 
             if(isValid(parsed)) dataFormatadaInputSalvo = format(parsed, 'yyyy-MM-dd');
           }
 
           const index = this.atendimentoItems.findIndex(at => at.id === this.atendimentoAtual.id);
+          
           if (index !== -1) {
             const updatedItem = { 
               ...atendimentoSalvo, 
               dataAtendimento: dataFormatadaInputSalvo
             };
+
             this.$set(this.atendimentoItems, index, updatedItem);
             this.atendimentoAtual = { ...updatedItem, descricao: updatedItem.textoAberturaAtendimento || '' };
+          
           } else {
             this.atendimentoAtual = { ...atendimentoSalvo, descricao: atendimentoSalvo.textoAberturaAtendimento || '' };
           }
+
           this.originalatendimentoAtual = JSON.parse(JSON.stringify(this.atendimentoAtual));
           this.$store.dispatch('snackbar/showSnackbar', {
             message: `Atendimento #${atendimentoSalvo.id} atualizado com sucesso!`,
@@ -668,6 +681,7 @@ export default {
     },
 
     async carregaPareceres(atendimentoId) {
+
       if (!atendimentoId) return;
       this.isLoadingPareceres = true;
       try {
@@ -684,6 +698,7 @@ export default {
               data: apiParecer.dataCadastro 
             };
           });
+
         } else {
           this.pareceres = []; 
         }
@@ -700,6 +715,7 @@ export default {
       },
 
     async adicionarNovoParecer() {
+
       if (!this.novoParecerTexto.trim() || !this.atendimentoAtual || !this.atendimentoAtual.id) {
         this.$store.dispatch('snackbar/showSnackbar', {
           message: 'O texto do parecer não pode ser vazio.',
@@ -708,7 +724,7 @@ export default {
         return; 
       }
 
-      this.isAddingParecer = true;
+      this.adicionandoParecer = true;
       try {
          const userInfoString = localStorage.getItem('user-info');
          const userIdString = localStorage.getItem('user-id');
@@ -718,7 +734,7 @@ export default {
             message: 'Sessão expirada. Faça login novamente para adicionar parecer.',
             color: 'error',
             timeout: 5000,
-          });          this.isAddingParecer = false;
+          });          this.adicionandoParecer = false;
           return;
         }
 
@@ -750,7 +766,7 @@ export default {
           timeout: 5000,
         });
       } finally { 
-        this.isAddingParecer = false;
+        this.adicionandoParecer = false;
       }
     },
     mapParecerDaAPIparaFront(apiParecer) {
@@ -774,7 +790,7 @@ export default {
       this.editedParecerText = '';
     },
 
-    async saveEditedParecer() {
+    async salvarParecerEditado() {
       if (!this.editedParecerText || !this.editedParecerText.trim() || !this.editingParecerId) {
         this.$store.dispatch('snackbar/showSnackbar', {
           message: 'O texto do parecer não pode ser vazio.',
@@ -782,7 +798,7 @@ export default {
         });
         return; 
       }
-      this.isSavingParecer = true;
+      this.salvandoParecer = true;
       try {
         const userIdString = localStorage.getItem('user-id');
         const userId = JSON.parse(userIdString);
@@ -813,7 +829,7 @@ export default {
           timeout: 5000,
         });
       } finally { 
-        this.isSavingParecer = false;
+        this.salvandoParecer = false;
       }
     },
 
@@ -841,10 +857,6 @@ export default {
 <style scoped>
 
 .fill-height-container {
-  min-height: 100vh;
-}
-
-.fill-height {
   height: 100%;
 }
 
@@ -858,4 +870,16 @@ export default {
 .v-window-item.fill-height > .v-card.fill-height.d-flex.flex-column {
   overflow-y: auto;
 }
+
+.theme--light .visible-divider {
+  border-color: rgba(0, 0, 0, 0.22) !important; 
+}
+.theme--dark .visible-divider {
+  border-color: rgba(255, 255, 255, 0.22) !important; 
+}
+
+.custom-row-height-table .v-data-table__wrapper > table > tbody > tr > td {
+  height: 56px !important; 
+}
+
 </style>

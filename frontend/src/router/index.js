@@ -12,22 +12,22 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('user-token');
 
-  if (to.matched.some(record => record.meta.requiresAuth)) { // Se a rota requer autenticação
-    if (!isAuthenticated) { // E o usuário não está autenticado
+  if (to.matched.some(record => record.meta.requiresAuth)) { 
+    if (!isAuthenticated) { 
       next({
         path: '/login',
-        query: { redirect: to.fullPath } // Salva a rota que o usuário tentou acessar
+        query: { redirect: to.fullPath } 
       });
-    } else { // Se está autenticado, permite o acesso
+    } else {
       next();
     }
-  } else if (to.matched.some(record => record.meta.guest)) { // Se é uma rota para convidados (ex: login)
-    if (isAuthenticated) { // E o usuário já está autenticado
-      next({ path: '/' }); // Redireciona para a página principal de autenticados
-    } else { // Se não está autenticado, permite o acesso à rota de convidado
+  } else if (to.matched.some(record => record.meta.guest)) { 
+    if (isAuthenticated) { 
+      next({ path: '/' }); 
+    } else { 
       next();
     }
-  } else { // Para rotas que não têm meta (públicas ou não especificadas)
+  } else { 
     next();
   }
 });

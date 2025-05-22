@@ -1,20 +1,20 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
-  <v-container fluid>
+  <v-container fluid >
     <h1 class="my-5 px-5">Cadastro de clientes</h1>
     <v-card class="my-5 mx-5">
       <TableGenerica
         :headers="clientHeaders"
         :items="clientItems"
+        table-class="elevation-1 custom-row-height-table"
         :loading="isLoading"
         :search="searchTerm"
         item-key="id"
-        table-class="elevation-1"
         :has-actions-slot="true" 
       >
         
         <template v-slot:top>
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-center py-5">
           <v-text-field
             v-model="searchTerm"
             label="Buscar Clientes..."
@@ -23,7 +23,7 @@
             clearable
           ></v-text-field>
           <div class= "py-2">
-            <!-- Botão para telas maiores (md e acima) -->
+
             <v-btn
               v-if="!$vuetify.breakpoint.smAndDown"
               elevation="2"
@@ -45,19 +45,11 @@
         <template v-slot:actions="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon small v-bind="attrs" v-on="on" @click="editarCliente(item)">
-                <v-icon small color="primary">mdi-pencil</v-icon>
+              <v-btn icon v-bind="attrs" v-on="on" @click.stop="editarCliente(item)">
+              <v-icon color="secondary">mdi-pencil</v-icon>
               </v-btn>
             </template>
             <span>Editar Cliente</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon small v-bind="attrs" v-on="on" @click="excluirCliente(item)">
-                <v-icon small color="error">mdi-delete</v-icon>
-              </v-btn>
-            </template>
-            <span>Excluir Cliente</span>
           </v-tooltip>
         </template>
 
@@ -146,6 +138,9 @@ export default {
           itemText: 'text', 
           itemValue: 'value', 
           cols: 12,
+            rules: [
+            v => typeof v === 'boolean' || 'Status é obrigatório. Selecione Ativo ou Inativo.'
+          ]
         },
       ],
     };
@@ -213,7 +208,11 @@ export default {
 </script>
 
 <style scoped>
+
 v-text-field {
     padding-top: 0px;
+}
+.custom-row-height-table .v-data-table__wrapper > table > tbody > tr > td {
+  height: 59px !important; 
 }
 </style>

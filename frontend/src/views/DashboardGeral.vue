@@ -2,7 +2,6 @@
   <v-container fluid>
     <h1 class="my-5 px-5">Dashboard Geral</h1>
     <v-row>
-
       <v-col cols="12" md="6">
         <v-card>
           <v-card-title>Atendimentos por Cliente</v-card-title>
@@ -23,7 +22,20 @@
       </v-col>
       <v-col cols="12" md="6">
         <v-card>
-          <v-card-title>Atendimentos por Período (Mensal)</v-card-title>
+          <v-card-title class="d-flex justify-space-between align-center">
+            <span>Atendimentos por Período</span>
+            <v-select
+              v-model="periodoSelecionado"
+              :items="opcoesPeriodo"
+              label="Agrupar por"
+              dense
+              outlined
+              hide-details
+              class="ml-4"
+              style="max-width: 180px; flex-shrink: 0;"
+              @change="updateChartThemes"
+            ></v-select>
+          </v-card-title>
           <v-card-text>
             <highcharts v-if="!isLoading" :options="chartOptionsAtendimentosPorPeriodo"></highcharts>
             <v-progress-circular indeterminate color="primary" v-if="isLoading"></v-progress-circular>
@@ -35,7 +47,7 @@
 </template>
 
 <script>
-import { parseISO, format, startOfMonth, isValid } from 'date-fns';
+import { parseISO, format, startOfMonth, isValid, parse } from 'date-fns';
 import apiService from '@/services/apiService';
 
 
@@ -43,22 +55,26 @@ export default {
   name: 'DashboardGeral',
   data() {
 
-
     return {
       isLoading: true,
       clientes: [], 
       usuarios: [], 
       atendimentos: [], 
+      periodoSelecionado: 'mensal',
+      opcoesPeriodo: [
+        { text: 'Mes', value: 'mensal' },
+        { text: 'Dia', value: 'diario' },
+      ],
       chartOptionsAtendimentosPorCliente: {},
       chartOptionsAtendimentosPorUsuario: {},
       chartOptionsAtendimentosPorPeriodo: {},
+      
     };
   },
   created() {
     this.loadDashboardData();
   },
   watch: {
-
     '$vuetify.theme.dark': {
       handler() {
         this.updateChartThemes(); 
@@ -92,14 +108,11 @@ export default {
     },
  updateChartThemes() {
       try {
-
         this.processAtendimentosPorCliente(this.$vuetify.theme.dark);
         this.processAtendimentosPorUsuario(this.$vuetify.theme.dark);
         this.processAtendimentosPorPeriodo(this.$vuetify.theme.dark);
       } catch (error) {
-        console.error("Erro ao carregar dados do dashboard:", error);
-      } finally {
-        this.isLoading = false;
+        console.error("Erro ao atualizar temas ou período do gráfico:", error);
       }
     },
 
@@ -181,46 +194,82 @@ export default {
     },
 
     processAtendimentosPorPeriodo(isDark) {
-      const countsByMonth = this.atendimentos.reduce((acc, atendimento) => {
+      let periodFormatString;
+      let xAxisTitle;
+
+      if (this.periodoSelecionado === 'diario') {
+        periodFormatString = 'dd/MM/yy'; 
+        xAxisTitle = 'Dia';
+      } else { // mensal
+        periodFormatString = 'MMM/yy'; 
+        xAxisTitle = 'Mês/Ano';
+      }
+
+      const countsByPeriod = this.atendimentos.reduce((acc, atendimento) => {
         const date = parseISO(atendimento.dataCadastro);
         if (isValid(date)) {
-          const monthYear = format(startOfMonth(date), 'MMM/yy'); 
-          acc[monthYear] = (acc[monthYear] || 0) + 1;
+          let periodKey;
+          if (this.periodoSelecionado === 'diario') {
+            periodKey = format(date, periodFormatString);
+          } else { 
+            periodKey = format(startOfMonth(date), periodFormatString);
+          }
+          acc[periodKey] = (acc[periodKey] || 0) + 1;
         }
         return acc;
       }, {});
 
-      const sortedMonths = Object.keys(countsByMonth).sort((a, b) => {
-        const [m1, y1] = a.split('/');
-        const [m2, y2] = b.split('/');
-        const dateA = new Date(`20${y1}`, 'JanFebMarAprMayJunJulAugSepOctNovDec'.split(/(?=[A-Z])/).indexOf(m1));
-        const dateB = new Date(`20${y2}`, 'JanFebMarAprMayJunJulAugSepOctNovDec'.split(/(?=[A-Z])/).indexOf(m2));
-        return dateA - dateB;
-      });
+      let sortedPeriods;
+      if (this.periodoSelecionado === 'diario') {
+        
+        sortedPeriods = Object.keys(countsByPeriod).sort((a, b) => {
+          const dateA = parse(a, periodFormatString, new Date());
+          const dateB = parse(b, periodFormatString, new Date());
+          return dateA.getTime() - dateB.getTime();
+        });
+      } else { 
+        sortedPeriods = Object.keys(countsByPeriod).sort((a, b) => {
+         
+          const dateA = parse(`01/${a}`, `dd/${periodFormatString}`, new Date());
+          const dateB = parse(`01/${b}`, `dd/${periodFormatString}`, new Date());
+          return dateA.getTime() - dateB.getTime();
+        });
+      }
       
-      const categories = sortedMonths;
-      const data = sortedMonths.map(month => countsByMonth[month]);
+      const categories = sortedPeriods;
+      const data = sortedPeriods.map(period => countsByPeriod[period]);
 
       const textColor = isDark ? '#E0E0E0' : '#333333';
       const gridLineColor = isDark ? '#555555' : '#E6E6E6';
       const backgroundColor = isDark ? '#1E1E1E' : '#FFFFFF';
 
       this.chartOptionsAtendimentosPorPeriodo = {
-        chart: { 
-            type: 'line',
-            backgroundColor: backgroundColor 
+        chart: {
+          type: 'line',
+          backgroundColor: backgroundColor,
         },
         title: { text: null },
-        xAxis: { 
-            categories: categories, title: { text: 'Mês/Ano', style: { color: textColor } },
-            labels: { style: { color: textColor } }, 
-            gridLineColor: gridLineColor 
+        xAxis: {
+          categories: categories,
+          title: { text: xAxisTitle, style: { color: textColor } },
+          labels: { style: { color: textColor } },
         },
-        yAxis: { min: 0, title: { text: 'Nº de Atendimentos', style: { color: textColor } }, allowDecimals: false,
-            labels: { style: { color: textColor } }, 
-           gridLineColor: gridLineColor 
+        yAxis: {
+          min: 0,
+          title: { text: 'Nº de Atendimentos', style: { color: textColor } },
+          allowDecimals: false,
+          labels: { style: { color: textColor } },
+          gridLineColor: gridLineColor,
         },
-        series: [{ name: 'Atendimentos', data: data}],
+        series: [{ name: 'Atendimentos', data: data }],
+        legend: {
+          itemStyle: { color: textColor },
+          itemHoverStyle: { color: isDark ? '#FFFFFF' : '#000000' }
+        },
+        tooltip: {
+          backgroundColor: isDark ? 'rgba(30, 30, 30, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+          style: { color: textColor }
+        }
       };
     }
   },

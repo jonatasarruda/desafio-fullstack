@@ -10,7 +10,7 @@
         :loading="isLoading"
         :search="searchTerm"
         item-key="id"
-        table-class="elevation-1"
+        table-class="elevation-1 custom-row-height-table"
         :has-actions-slot="true" 
       >
         
@@ -24,7 +24,6 @@
             clearable
           ></v-text-field>
           <div class= "py-2">
-            <!-- Botão para telas maiores (md e acima) -->
             <v-btn
               v-if="!$vuetify.breakpoint.smAndDown"
               elevation="2"
@@ -39,7 +38,7 @@
       </template>
         
         <template v-slot:item.ativo="{ item }">
-          <v-chip :color="getStatusColor(item.ativo)" small dark>
+          <v-chip :color="getStatusColor(item.ativo)" dark>
             {{ item.ativo ? 'Ativo' : 'Inativo' }}
           </v-chip>
         </template>
@@ -47,19 +46,11 @@
         <template v-slot:actions="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon small v-bind="attrs" v-on="on" @click="editarUsuario(item)">
-                <v-icon small color="primary">mdi-pencil</v-icon>
+              <v-btn icon v-bind="attrs" v-on="on" @click.stop="editarUsuario(item)">
+              <v-icon color="secondary">mdi-pencil</v-icon>
               </v-btn>
             </template>
             <span>Editar Usuário</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon small v-bind="attrs" v-on="on" @click="excluirUsuario(item)">
-                <v-icon small color="error">mdi-delete</v-icon>
-              </v-btn>
-            </template>
-            <span>Excluir Usuário</span>
           </v-tooltip>
         </template>
 
@@ -72,7 +63,6 @@
       </TableGenerica>
     </v-card>
 
-    <!-- Botão FAB para telas menores (sm e abaixo) -->
     <v-tooltip left>
       <template v-slot:activator="{ on, attrs }">
         <v-btn
@@ -150,6 +140,9 @@ export default {
           itemText: 'text', 
           itemValue: 'value', 
           cols: 12,
+           rules: [
+            v => typeof v === 'boolean' || 'Status é obrigatório. Selecione Ativo ou Inativo.'
+          ]
         },
       ],
     };
@@ -238,4 +231,7 @@ export default {
 v-text-field {
     padding-top: 0px;
 }
+.custom-row-height-table .v-data-table__wrapper > table > tbody > tr > td {
+  height: 59px !important;
+ }
 </style>

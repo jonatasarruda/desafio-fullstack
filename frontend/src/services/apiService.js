@@ -15,9 +15,8 @@ if (initialToken) {
 }
 
 async function login(credentials) {
-// O endpoint de login geralmente não requer token de autorização
 
-return api.post('/usuarios/login', credentials); // Ajuste o endpoint '/auth/login' conforme sua API
+return api.post('/usuarios/login', credentials);
 }
 
 async function logout() {
