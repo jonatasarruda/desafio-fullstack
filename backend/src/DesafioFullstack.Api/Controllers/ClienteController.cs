@@ -20,6 +20,15 @@ namespace DesafioFullstack.Api.Controllers
             _clienteService = clienteService;
         }
 
+        /// <summary>
+        /// Adiciona um novo cliente.
+        /// </summary>
+        /// <param name="contrato">Dados do novo cliente.</param>
+        /// <returns>O cliente recém-criado.</returns>
+        /// <response code="201">Retorna o cliente recém-criado.</response>
+        /// <response code="400">Se os dados do cliente forem inválidos.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Adicionar(ClienteRequestContract contrato)
@@ -34,8 +43,15 @@ namespace DesafioFullstack.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtém todos os clientes.
+        /// </summary>
+        /// <returns>Lista de todos os clientes.</returns>
+        /// <response code="200">Retorna a lista de clientes.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> Obter()
         {
             try
@@ -49,9 +65,18 @@ namespace DesafioFullstack.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtém um cliente específico pelo ID.
+        /// </summary>
+        /// <param name="id">ID do cliente.</param>
+        /// <returns>O cliente correspondente ao ID.</returns>
+        /// <response code="200">Retorna o cliente.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="404">Se o cliente não for encontrado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpGet]
         [Route("{id:long}")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> Obter(long id)
         {
             try
@@ -65,6 +90,15 @@ namespace DesafioFullstack.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Obtém um cliente específico pelo ID.
+        /// </summary>
+        /// <param name="nome">Nome do cliente.</param>
+        /// <returns>O cliente correspondente ao ID.</returns>
+        /// <response code="200">Retorna o cliente.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="404">Se o cliente não for encontrado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpGet]
         [Route("{nome}")]
         [Authorize]
@@ -81,6 +115,17 @@ namespace DesafioFullstack.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Atualiza um cliente existente.
+        /// </summary>
+        /// <param name="id">ID do cliente a ser atualizado.</param>
+        /// <param name="contrato">Novos dados do cliente.</param>
+        /// <returns>O cliente atualizado.</returns>
+        /// <response code="200">Retorna o cliente atualizado.</response>
+        /// <response code="400">Se os dados do cliente forem inválidos.</response>
+        /// <response code="401">Se o usuário não estiver autenticado.</response>
+        /// <response code="404">Se o cliente não for encontrado.</response>
+        /// <response code="500">Erro interno do servidor.</response>
         [HttpPut]
         [Route("{id}")]
         [Authorize]

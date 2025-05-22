@@ -20,9 +20,9 @@ namespace DesafioFullstack.Api.Controllers
         private readonly IAtendimentoService _atendimentoService;
 
         /// <summary>
-        /// Construtor do UsuarioController.
+        /// Construtor do AtendimentoController.
         /// </summary>
-        /// <param name="atendimentoService">Serviço de usuário injetado.</param>
+        /// <param name="atendimentoService">Serviço de atendimento injetado.</param>
         public AtendimentoController(
             IAtendimentoService atendimentoService)
         {
@@ -30,7 +30,7 @@ namespace DesafioFullstack.Api.Controllers
         }
 
         /// <summary>
-        /// Adiciona um novo usuário.
+        /// Adiciona um novo atendimento.
         /// </summary>
         /// <param name="contrato">Dados do novo atendimento.</param>
         /// <returns>O atendimento recém-criado.</returns>

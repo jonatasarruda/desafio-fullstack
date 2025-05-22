@@ -18,86 +18,109 @@ namespace DesafioFullstack.Api.Data
 
         public async Task SeedAsync()
         {
-            // Verifica se já existem usuários, indicando que o seed possivelmente já foi executado.
-            if (await _context.Usuarios.AnyAsync())
+            if (await _context.Usuarios.AnyAsync() || await _context.Clientes.AnyAsync())
             {
                 return; 
             }
 
+            var random = new Random();
             var usuarios = new List<Usuario>();
             var clientes = new List<Cliente>();
             var atendimentos = new List<Atendimento>();
             var pareceres = new List<Parecer>();
 
-            // Seed Usuarios
-            var adminUser = new Usuario
-            {
-                Nome = "Administrador",
-                Email = "admin@example.com",
-                Senha = SeedHelper.GerarHashSenha("admin123"), // Lembre-se de usar senhas seguras em produção
-                DataCadastro = DateTime.UtcNow,
-                Ativo = true
-            };
-            usuarios.Add(adminUser);
 
-            var regularUser = new Usuario
+            for (int i = 1; i <= 10; i++)
             {
-                Nome = "Usuário Comum",
-                Email = "user@example.com",
-                Senha = SeedHelper.GerarHashSenha("user123"),
-                DataCadastro = DateTime.UtcNow,
-                Ativo = true
-            };
-            usuarios.Add(regularUser);
+                var user = new Usuario
+                {
+                    Nome = i == 1 ? "Administrador Master" : $"Usuário Padrão {i}",
+                    Email = i == 1 ? "admin@admin.com" : $"user{i}@exemplo.com",
+                    Senha = SeedHelper.GerarHashSenha(i == 1 ? "admin123" : $"user{i}pass"),
+                    DataCadastro = DateTime.SpecifyKind(DateTime.UtcNow.AddDays(-random.Next(0, 30)), DateTimeKind.Unspecified),
+                    Ativo = true
+                };
+                usuarios.Add(user);
+            }
 
             await _context.Usuarios.AddRangeAsync(usuarios);
-            await _context.SaveChangesAsync(); // Salva para obter os IDs gerados
+            await _context.SaveChangesAsync(); 
 
-            // Seed Clientes
-            var cliente1 = new Cliente
-            {
-                Nome = "João Silva",
-                // CPF = "11111111111", // Considere validações e formatação de CPF
-                // Telefone = "11999998888",
-                DataCadastro = DateTime.UtcNow,
-                Ativo = true
-            };
-            clientes.Add(cliente1);
 
-            var cliente2 = new Cliente
+            for (int i = 1; i <= 10; i++)
             {
-                Nome = "Maria Oliveira",
-                // CPF = "22222222222",
-                // Telefone = "21988887777",
-                DataCadastro = DateTime.UtcNow,
-                Ativo = true
-            };
-            clientes.Add(cliente2);
-            
+                var cliente = new Cliente
+                {
+                    Nome = $"Cliente Exemplo {i}",
+                    DataCadastro = DateTime.SpecifyKind(DateTime.UtcNow.AddDays(-random.Next(0, 60)), DateTimeKind.Unspecified),
+                    Ativo = true
+                };
+                clientes.Add(cliente);
+            }
+
             await _context.Clientes.AddRangeAsync(clientes);
-            await _context.SaveChangesAsync(); // Salva para obter os IDs gerados
+            await _context.SaveChangesAsync(); 
 
-            // Seed Atendimentos
-            var atendimento1 = new Atendimento
+   
+            var seededUsuarios = await _context.Usuarios.ToListAsync();
+            var seededClientes = await _context.Clientes.ToListAsync();
+
+            string[] statusPossiveis = { "aberto", "em_andamento", "concluido", "cancelado" };
+
+            for (int i = 0; i < 10; i++)
             {
-                ClienteId = cliente1.Id,
-                UsuarioId = adminUser.Id,
-                // Descricao = "Problema inicial reportado pelo cliente João Silva.",
-                DataCadastro = DateTime.UtcNow,
-                Status = "Aberto" // Ex: "Aberto", "Em Andamento", "Concluído"
-            };
-            atendimentos.Add(atendimento1);
+
+                var clienteParaAtendimento = seededClientes[random.Next(seededClientes.Count)];
+                var usuarioParaAtendimento = seededUsuarios[random.Next(seededUsuarios.Count)];
+
+
+                var dataAtendimentoBaseUtc = DateTime.UtcNow.AddDays(-random.Next(0, 61));
+                var dataAtendimentoParaSalvar = DateTime.SpecifyKind(dataAtendimentoBaseUtc, DateTimeKind.Unspecified);
+
+  
+                if (dataAtendimentoParaSalvar < clienteParaAtendimento.DataCadastro)
+                {
+                    dataAtendimentoParaSalvar = clienteParaAtendimento.DataCadastro.AddHours(1); 
+                }
+                if (dataAtendimentoParaSalvar < usuarioParaAtendimento.DataCadastro)
+                {
+                    dataAtendimentoParaSalvar = usuarioParaAtendimento.DataCadastro.AddHours(1);
+                }
+
+                var atendimento = new Atendimento
+                {
+                    ClienteId = clienteParaAtendimento.Id,
+                    UsuarioId = usuarioParaAtendimento.Id,
+                    TextoAberturaAtendimento = $"Descrição do atendimento {i + 1} para o cliente {clienteParaAtendimento.Nome}.",
+                    DataCadastro = dataAtendimentoParaSalvar,
+                    Status = statusPossiveis[random.Next(statusPossiveis.Length)]
+                };
+                atendimentos.Add(atendimento);
+            }
+
             await _context.Atendimentos.AddRangeAsync(atendimentos);
-            await _context.SaveChangesAsync(); // Salva para obter os IDs gerados
+            await _context.SaveChangesAsync(); 
 
-            // Seed Pareceres
-            var parecer1 = new Parecer
+ 
+            var seededAtendimentos = await _context.Atendimentos.OrderBy(a => a.DataCadastro).ToListAsync();
+
+
+            for (int i = 0; i < 10; i++)
             {
-                AtendimentoId = atendimento1.Id,
-                // Descricao = "Primeiro parecer sobre o atendimento do cliente João.",
-                DataCadastro = DateTime.UtcNow.AddMinutes(5) // Um pouco depois do atendimento
-            };
-            pareceres.Add(parecer1);
+                var atendimentoParaParecer = seededAtendimentos[i % seededAtendimentos.Count];
+                var usuarioParaParecer = seededUsuarios[random.Next(seededUsuarios.Count)];
+
+                var dataParecer = atendimentoParaParecer.DataCadastro.AddMinutes(random.Next(5, 120)); 
+
+                var parecer = new Parecer
+                {
+                    AtendimentoId = atendimentoParaParecer.Id,
+                    UsuarioId = usuarioParaParecer.Id,
+                    DescricaoParecer = $"Parecer {i + 1} sobre o atendimento ID {atendimentoParaParecer.Id}.",
+                    DataCadastro = dataParecer
+                };
+                pareceres.Add(parecer);
+            }
             await _context.Pareceres.AddRangeAsync(pareceres);
 
             await _context.SaveChangesAsync();

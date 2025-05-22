@@ -19,11 +19,11 @@ var builder = WebApplication.CreateBuilder(args);
 ConfigurarServices(builder);
 
 ConfigurarInjecaoDeDependencia(builder);
-builder.Services.AddScoped<DataSeeder>(); // Adiciona o DataSeeder
+builder.Services.AddScoped<DataSeeder>(); 
 
 var app = builder.Build();
 
-// Aplica migrações e executa o seed dos dados
+
 await EnsureDatabaseCreatedAndSeeded(app);
 
 ConfigurarAplicacao(app);
@@ -32,13 +32,13 @@ app.Run();
 
 #region Métodos de Configuração
 
-// Metodo que configrua as injeções de dependencia do projeto.
+
 static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
 {
     string? connectionString = builder.Configuration.GetConnectionString("PADRAO");
 
     builder.Services.AddDbContext<ApplicationContext>(options =>
-        options.UseNpgsql(connectionString), ServiceLifetime.Scoped); // Alterado para Scoped, que é mais comum para DbContext
+        options.UseNpgsql(connectionString), ServiceLifetime.Scoped); 
 
     var config = new MapperConfiguration(cfg =>
     {
@@ -68,7 +68,7 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
 
 }
 
-// Configura o serviços da API.
+
 static void ConfigurarServices(WebApplicationBuilder builder)
 {
 
@@ -110,10 +110,9 @@ static void ConfigurarServices(WebApplicationBuilder builder)
 
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "DesafioFullstack.Api", Version = "v1" });   
         
-        // Configurar o Swagger para usar o arquivo XML gerado
         var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-        if (File.Exists(xmlPath)) // Adicionar uma verificação se o arquivo existe é uma boa prática
+        if (File.Exists(xmlPath)) 
         {
             c.IncludeXmlComments(xmlPath);
         }
@@ -139,10 +138,9 @@ static void ConfigurarServices(WebApplicationBuilder builder)
     });
 }
 
-// Configura os serviços na aplicação.
+
 static void ConfigurarAplicacao(WebApplication app)
 {
-    // Configura o contexto do postgreSql para usar timestamp sem time zone.
     AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     app.UseDeveloperExceptionPage()
         .UseRouting();
@@ -155,9 +153,9 @@ static void ConfigurarAplicacao(WebApplication app)
         });
 
     app.UseCors(x => x
-        .AllowAnyOrigin() // Permite todas as origens
-        .AllowAnyMethod() // Permite todos os métodos
-        .AllowAnyHeader()) // Permite todos os cabeçalhos
+        .AllowAnyOrigin()
+        .AllowAnyMethod() 
+        .AllowAnyHeader()) 
         .UseAuthentication();
 
     app.UseAuthorization();
@@ -176,12 +174,11 @@ static async Task EnsureDatabaseCreatedAndSeeded(WebApplication app)
         {
             var context = services.GetRequiredService<ApplicationContext>();
             
-            // Aplica quaisquer migrações pendentes.
-            // É uma boa prática garantir que o schema do banco esteja atualizado antes do seed.
+
             await context.Database.MigrateAsync();
 
-            // Executa o seed apenas em ambiente de desenvolvimento ou conforme necessidade
-            if (app.Environment.IsDevelopment()) // Ou outra lógica de sua preferência
+
+            if (app.Environment.IsDevelopment()) 
             {
                 var seeder = services.GetRequiredService<DataSeeder>();
                 await seeder.SeedAsync();
@@ -191,7 +188,7 @@ static async Task EnsureDatabaseCreatedAndSeeded(WebApplication app)
         {
             var logger = services.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "Um erro ocorreu ao aplicar migrações ou ao popular o banco de dados (seed).");
-            // Considere o que fazer em caso de erro: parar a aplicação, logar e continuar, etc.
+
         }
     }
 }
